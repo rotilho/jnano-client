@@ -1,23 +1,23 @@
 package com.rotilho.jnano.client.block;
 
 import com.rotilho.jnano.commons.NanoBlocks;
-import com.sun.istack.internal.NotNull;
 
 import java.math.BigInteger;
 
+import lombok.NonNull;
 import lombok.Value;
 
 @Value(staticConstructor = "of")
 public class NanoStateBlock implements NanoBlock {
-    @NotNull
+    @NonNull
     private final String account;
-    @NotNull
+    @NonNull
     private final String previous;
-    @NotNull
+    @NonNull
     private final String representative;
-    @NotNull
+    @NonNull
     private final BigInteger balance;
-    @NotNull
+    @NonNull
     private final String link;
 
     @Override

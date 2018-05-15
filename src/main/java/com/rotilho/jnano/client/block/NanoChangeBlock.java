@@ -1,15 +1,15 @@
 package com.rotilho.jnano.client.block;
 
 import com.rotilho.jnano.commons.NanoBlocks;
-import com.sun.istack.internal.NotNull;
 
+import lombok.NonNull;
 import lombok.Value;
 
 @Value(staticConstructor = "of")
 public class NanoChangeBlock implements NanoBlock {
-    @NotNull
+    @NonNull
     private String previous;
-    @NotNull
+    @NonNull
     private String representative;
 
     @Override
