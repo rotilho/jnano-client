@@ -1,0 +1,31 @@
+group 'com.rotilho.jnano'
+version '1.0.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'jacoco'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+repositories {
+    maven {
+        url 'file://C:/Users/Felipe/.m2/repository'
+    }
+}
+
+dependencies {
+    compile 'com.google.code.findbugs:jsr305:3.0.2'
+    compile 'com.rotilho.jnano:jnano-commons:1.0.1-SNAPSHOT'
+    compileOnly 'org.projectlombok:lombok:1.16.20'
+    testCompile 'junit:junit:4.12'
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled false
+    }
+}
