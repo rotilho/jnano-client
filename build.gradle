@@ -10,15 +10,9 @@ repositories {
     mavenCentral()
 }
 
-repositories {
-    maven {
-        url 'file://C:/Users/Felipe/.m2/repository'
-    }
-}
-
 dependencies {
     compile 'com.google.code.findbugs:jsr305:3.0.2'
-    compile 'com.rotilho.jnano:jnano-commons:1.0.1-SNAPSHOT'
+    compile 'com.rotilho.jnano:jnano-commons:1.0.0'
     compileOnly 'org.projectlombok:lombok:1.16.20'
     testCompile 'junit:junit:4.12'
 }
@@ -28,4 +22,48 @@ jacocoTestReport {
         xml.enabled true
         html.enabled false
     }
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
+    }
+}
+
+modifyPom {
+    project {
+        name 'Nano Commons'
+        description 'JNano provides a set of low level Nano operations that includes signing, seed generation, block hashing and account creation.'
+        url 'https://github.com/rotilho/jnano-common'
+        packaging 'jar'
+        licenses {
+            license {
+                name 'MIT License'
+                url 'http://www.opensource.org/licenses/mit-license.php'
+                distribution 'repo'
+            }
+        }
+        scm {
+            url 'https://github.com/rotilho/jnano-commons'
+            connection 'scm:git:https://github.com/rotilho/jnano-commons.git'
+            developerConnection 'scm:git:https://github.com/rotilho/jnano-commons.git'
+        }
+
+        developers {
+            developer {
+                id 'rotilho'
+                name 'Felipe Rotilho'
+                email 'felipe@rotilho.com'
+            }
+        }
+    }
+}
+
+nexus {
+    repositoryUrl = 'https://oss.sonatype.org/service/local/staging/deploy/maven2'
+    snapshotRepositoryUrl = 'https://oss.sonatype.org/content/repositories/snapshots'
 }
