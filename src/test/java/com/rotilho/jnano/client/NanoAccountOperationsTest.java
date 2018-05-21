@@ -1,7 +1,7 @@
 package com.rotilho.jnano.client;
 
+import com.rotilho.jnano.client.NanoAccountOperations.BalanceInformation;
 import com.rotilho.jnano.client.NanoAccountOperations.BalanceRequest;
-import com.rotilho.jnano.client.NanoAccountOperations.BalanceResponse;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,30 +27,14 @@ public class NanoAccountOperationsTest {
     @Test
     public void shouldReturnBalance() {
         // given
-        BigInteger expectedBalance = BigInteger.valueOf(100);
-        BalanceResponse response = new BalanceResponse(expectedBalance, BigInteger.ZERO);
-        given(api.execute(new BalanceRequest(ACCOUNT), BalanceResponse.class)).willReturn(response);
+        BalanceInformation expectedBalanceInformation = new BalanceInformation(BigInteger.TEN, BigInteger.ZERO);
+        given(api.execute(new BalanceRequest(ACCOUNT), BalanceInformation.class)).willReturn(expectedBalanceInformation);
 
         // when
-        BigInteger balance = operations.getBalance(ACCOUNT, false);
+        BalanceInformation balance = operations.getBalance(ACCOUNT, false);
 
         // then
-        assertEquals(expectedBalance, balance);
-    }
-
-    @Test
-    public void shouldReturnTotalBalance() {
-        // given
-        BigInteger expectedBalance = BigInteger.valueOf(100);
-        BigInteger expectedPending = BigInteger.valueOf(100);
-        BalanceResponse response = new BalanceResponse(expectedBalance, expectedPending);
-        given(api.execute(new BalanceRequest(ACCOUNT), BalanceResponse.class)).willReturn(response);
-
-        // when
-        BigInteger totalBalance = operations.getBalance(ACCOUNT, true);
-
-        // then
-        assertEquals(expectedBalance.add(expectedPending), totalBalance);
+        assertEquals(expectedBalanceInformation, balance);
     }
 
 }

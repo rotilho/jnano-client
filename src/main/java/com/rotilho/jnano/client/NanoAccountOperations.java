@@ -13,13 +13,9 @@ public class NanoAccountOperations {
     @NonNull
     private final NanoAPI api;
 
-    public BigInteger getBalance(@Nonnull String account, boolean includePending) {
+    public BalanceInformation getBalance(@Nonnull String account, boolean includePending) {
         BalanceRequest request = new BalanceRequest(account);
-        BalanceResponse response = api.execute(request, BalanceResponse.class);
-        if (includePending) {
-            return response.getTotal();
-        }
-        return response.getBalance();
+        return api.execute(request, BalanceInformation.class);
     }
 
 
@@ -34,7 +30,7 @@ public class NanoAccountOperations {
     }
 
     @Value
-    static final class BalanceResponse {
+    static final class BalanceInformation {
         private final BigInteger balance;
         private final BigInteger pending;
 
