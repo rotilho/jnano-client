@@ -1,6 +1,7 @@
 package com.rotilho.jnano.client;
 
 import com.rotilho.jnano.client.NanoAccountOperations.AccountInformation;
+import com.rotilho.jnano.commons.NanoKeys;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -8,9 +9,9 @@ import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
-public class NanoAccountOperationsTest {
-    private static final String ACCOUNT = "nano_3iwi45me3cgo9aza9wx5f7rder37hw11xtc1ek8psqxw5oxb8cujjad6qp9y";
+import static org.junit.Assert.assertEquals;
 
+public class NanoAccountOperationsTest {
     @Rule
     public HttpMock httpMock = new HttpMock();
 
@@ -49,6 +50,21 @@ public class NanoAccountOperationsTest {
 
         // then
         JSONAssert.assertEquals(response, JSON.stringify(balance), JSONCompareMode.LENIENT);
+    }
+
+    @Test
+    public void shouldCreateAccount() {
+        // given
+        String seed = "1234567890123456789012345678901234567890123456789012345678901234";
+        byte[] privateKey = NanoKeys.createPrivateKey(seed, 0);
+        byte[] publicKey = NanoKeys.createPublicKey(privateKey);
+
+        // when
+        String account = operations.create(publicKey);
+
+        // then
+        String expectedAccount = "nano_3iwi45me3cgo9aza9wx5f7rder37hw11xtc1ek8psqxw5oxb8cujjad6qp9y";
+        assertEquals(expectedAccount, account);
     }
 
 

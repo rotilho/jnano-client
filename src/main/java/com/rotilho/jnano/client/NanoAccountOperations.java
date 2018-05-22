@@ -3,6 +3,7 @@ package com.rotilho.jnano.client;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.rotilho.jnano.commons.NanoAccounts;
 
 import java.math.BigInteger;
 
@@ -21,6 +22,10 @@ public class NanoAccountOperations {
     public AccountInformation getInfo(@Nonnull String account) {
         AccountAction request = new AccountAction("account_info", account);
         return api.execute(request, AccountInformation.class);
+    }
+
+    public String create(@Nonnull byte[] publicKey) {
+        return NanoAccounts.createAccount(publicKey);
     }
 
     @Value
