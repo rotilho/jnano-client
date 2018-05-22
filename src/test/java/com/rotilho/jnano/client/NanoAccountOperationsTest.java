@@ -6,10 +6,11 @@ import com.rotilho.jnano.commons.NanoKeys;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 
 public class NanoAccountOperationsTest {
     @Rule
@@ -49,7 +50,8 @@ public class NanoAccountOperationsTest {
         AccountInformation balance = operations.getInfo("xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3");
 
         // then
-        JSONAssert.assertEquals(response, JSON.stringify(balance), JSONCompareMode.LENIENT);
+        assertNotNull(balance);
+        assertEquals(response, JSON.stringify(balance), JSONCompareMode.LENIENT);
     }
 
     @Test
