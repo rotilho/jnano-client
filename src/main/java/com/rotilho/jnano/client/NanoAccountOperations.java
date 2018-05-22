@@ -1,5 +1,9 @@
 package com.rotilho.jnano.client;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+
 import java.math.BigInteger;
 
 import javax.annotation.Nonnull;
@@ -13,29 +17,62 @@ public class NanoAccountOperations {
     @NonNull
     private final NanoAPI api;
 
-    public BalanceInformation getBalance(@Nonnull String account, boolean includePending) {
-        BalanceRequest request = new BalanceRequest(account);
-        return api.execute(request, BalanceInformation.class);
+    @Nonnull
+    public AccountInformation getInfo(@Nonnull String account) {
+        AccountAction request = new AccountAction("account_info", account);
+        return api.execute(request, AccountInformation.class);
     }
 
-
     @Value
-    static final class BalanceRequest implements NanoAPIAction {
+    static final class AccountAction implements NanoAPIAction {
+        private final String action;
         private final String account;
 
-        @Override
-        public String getAction() {
-            return "account_balance";
+        public String getRepresentative() {
+            return Boolean.TRUE.toString();
+        }
+
+        public String getWeight() {
+            return Boolean.TRUE.toString();
+        }
+
+        public String getPending() {
+            return Boolean.TRUE.toString();
         }
     }
 
     @Value
-    static final class BalanceInformation {
+    public static final class AccountBalance {
+        @JsonSerialize(using = ToStringSerializer.class)
         private final BigInteger balance;
+        @JsonSerialize(using = ToStringSerializer.class)
         private final BigInteger pending;
 
         public BigInteger getTotal() {
             return balance.add(pending);
         }
     }
+
+    @Value
+    public static final class AccountInformation {
+        private final String frontier;
+        @JsonProperty("open_block")
+        private final String openBlock;
+        @JsonProperty("representative_block")
+        private final String representativeBlock;
+        @JsonSerialize(using = ToStringSerializer.class)
+        private final BigInteger balance;
+        @JsonSerialize(using = ToStringSerializer.class)
+        @JsonProperty("modified_timestamp")
+        private final Long modifiedTimestamp;
+        @JsonSerialize(using = ToStringSerializer.class)
+        @JsonProperty("block_count")
+        private final Long blockCount;
+        private final String representative;
+        @JsonSerialize(using = ToStringSerializer.class)
+        private final BigInteger weight;
+        @JsonSerialize(using = ToStringSerializer.class)
+        private final BigInteger pending;
+    }
+
 }
