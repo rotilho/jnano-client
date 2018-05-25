@@ -162,7 +162,6 @@ public class NanoAccountOperationsTest {
         List<Transaction<?>> transactions = operations.getHistory(account);
 
         // then
-        assertNotNull(transactions);
         assertEquals(block, JSON.stringify(transactions.get(0)), JSONCompareMode.LENIENT);
     }
 
