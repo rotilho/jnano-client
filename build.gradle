@@ -11,10 +11,6 @@ repositories {
     mavenCentral()
 }
 
-compileJava {
-    options.compilerArgs << '-parameters'
-}
-
 dependencies {
     compile 'com.google.code.findbugs:jsr305:3.0.2'
     compile 'com.rotilho.jnano:jnano-commons:1.0.0'
