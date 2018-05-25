@@ -8,9 +8,14 @@ import lombok.Value;
 @Value(staticConstructor = "of")
 public class NanoReceiveBlock implements NanoBlock {
     @NonNull
-    private String previous;
+    private final String previous;
     @NonNull
-    private String source;
+    private final String source;
+
+    @Override
+    public String getType() {
+        return "receive";
+    }
 
     @Override
     public String getHash() {

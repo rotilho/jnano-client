@@ -6,7 +6,9 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 
 import java.io.IOException;
 
-public class JSON {
+import lombok.NonNull;
+
+public final class JSON {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
             .registerModule(new ParameterNamesModule())
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -14,11 +16,13 @@ public class JSON {
     private JSON() {
     }
 
-    public static <T> T parse(String json, Class<T> clazz) throws IOException {
+    @NonNull
+    public static <T> T parse(@NonNull String json, @NonNull Class<T> clazz) throws IOException {
         return OBJECT_MAPPER.readValue(json, clazz);
     }
 
-    public static <T> String stringify(T object) throws IOException {
+    @NonNull
+    public static <T> String stringify(@NonNull T object) throws IOException {
         return OBJECT_MAPPER.writeValueAsString(object);
     }
 

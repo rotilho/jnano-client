@@ -16,7 +16,7 @@ public class HttpMock extends WireMockRule {
     }
 
     public NanoAPI getNanoAPI() {
-        return new NanoAPI("http://localhost:" + port() + "/");
+        return NanoAPI.builder().endpoint("http://localhost:" + port() + "/").build();
     }
 
     public void mock(String request, String response) {

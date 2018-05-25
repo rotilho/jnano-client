@@ -15,6 +15,11 @@ public class NanoOpenBlock implements NanoBlock {
     private final String account;
 
     @Override
+    public String getType() {
+        return "open";
+    }
+
+    @Override
     public String getHash() {
         return NanoBlocks.hashOpenBlock(source, representative, account);
     }

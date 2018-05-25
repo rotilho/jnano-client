@@ -8,9 +8,14 @@ import lombok.Value;
 @Value(staticConstructor = "of")
 public class NanoChangeBlock implements NanoBlock {
     @NonNull
-    private String previous;
+    private final String previous;
     @NonNull
-    private String representative;
+    private final String representative;
+
+    @Override
+    public String getType() {
+        return "change";
+    }
 
     @Override
     public String getHash() {
