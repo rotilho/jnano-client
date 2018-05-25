@@ -51,7 +51,7 @@ public class NanoAccountOperations {
 
 
     @Value
-    static class AccountInformationAction implements NanoAPIAction {
+    private static class AccountInformationAction implements NanoAPIAction {
         private final String account;
 
         public String getAction() {
@@ -72,7 +72,7 @@ public class NanoAccountOperations {
     }
 
     @Value
-    static final class AccountInformation {
+    public static final class AccountInformation {
         private final String frontier;
         @JsonProperty("open_block")
         private final String openBlock;
@@ -94,7 +94,7 @@ public class NanoAccountOperations {
     }
 
     @Value
-    static class AccountHistoryAction implements NanoAPIAction {
+    private static class AccountHistoryAction implements NanoAPIAction {
         private final String account;
         @JsonSerialize(using = ToStringSerializer.class)
         private final Integer count;
@@ -109,12 +109,12 @@ public class NanoAccountOperations {
     }
 
     @Value
-    static class AccountHistory {
+    private static class AccountHistory {
         private final List<AccountHistoryEntry> history;
     }
 
     @Value
-    static class AccountHistoryEntry {
+    private static class AccountHistoryEntry {
         private final String type;
         private final String previous;
         private final String representative;
@@ -127,12 +127,12 @@ public class NanoAccountOperations {
         private final String signature;
         private final String work;
 
-        Transaction<?> toTransaction() {
+        private Transaction<?> toTransaction() {
             NanoBlock block = toBlock();
             return Transaction.of(block, signature, work);
         }
 
-        NanoBlock toBlock() {
+        private NanoBlock toBlock() {
             switch (type) {
                 case "open":
                     return NanoOpenBlock.of(source, representative, account);
