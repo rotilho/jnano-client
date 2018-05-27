@@ -15,6 +15,7 @@ import com.rotilho.jnano.commons.NanoAccounts;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 
@@ -22,6 +23,8 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor
@@ -55,6 +58,20 @@ public class NanoAccountOperations {
     @NonNull
     public byte[] toPublicKey(@Nonnull String account) {
         return NanoAccounts.toPublicKey(account);
+    }
+
+    @NonNull
+    public List<String> getPending(@Nonnull String account) {
+        AccountPendingAction request = new AccountPendingAction(singletonList(account));
+        AccountPending pendings = api.execute(request, AccountPending.class);
+        return pendings.getBlocks().getOrDefault(account, emptyList());
+    }
+
+    @NonNull
+    public Map<String, List<String>> getPending(@Nonnull List<String> account) {
+        AccountPendingAction request = new AccountPendingAction(account);
+        AccountPending pendings = api.execute(request, AccountPending.class);
+        return pendings.getBlocks();
     }
 
     @Value
@@ -131,5 +148,24 @@ public class NanoAccountOperations {
                     return NanoStateBlock.of(account, previous != null ? previous : "", representative, balance != null ? balance : BigInteger.ZERO, link);
             }
         }
+    }
+
+    @Value
+    private static class AccountPendingAction implements NanoAPIAction {
+        private final List<String> accounts;
+
+        public String getAction() {
+            return "accounts_pending";
+        }
+
+        public String getCount() {
+            return Long.MAX_VALUE + "";
+        }
+    }
+
+
+    @Value
+    private static class AccountPending {
+        private final Map<String, List<String>> blocks;
     }
 }

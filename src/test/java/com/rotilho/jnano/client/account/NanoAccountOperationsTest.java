@@ -1,5 +1,7 @@
 package com.rotilho.jnano.client.account;
 
+import com.google.common.collect.ImmutableMap;
+
 import com.rotilho.jnano.client.HttpMock;
 import com.rotilho.jnano.client.JSON;
 import com.rotilho.jnano.client.transaction.Transaction;
@@ -10,10 +12,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 
 public class NanoAccountOperationsTest {
@@ -54,7 +58,6 @@ public class NanoAccountOperationsTest {
         AccountInformation information = operations.getInfo("xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3");
 
         // then
-        assertNotNull(information);
         assertEquals(response, JSON.stringify(information), JSONCompareMode.LENIENT);
     }
 
@@ -153,6 +156,59 @@ public class NanoAccountOperationsTest {
 
         // then
         assertEquals(address, operations.create(publicKey));
+    }
+
+    @Test
+    public void shouldReturnPendingTransactionListWhenSendingOneAccount() {
+        // given
+        String request = "{  \n" +
+                "  \"action\": \"accounts_pending\",  \n" +
+                "  \"accounts\": [\"xrb_1111111111111111111111111111111111111111111111111117353trpda\"], \n" +
+                "  \"count\": \"9223372036854775807\" \n" +
+                "}";
+        String response = "{  \n" +
+                "  \"blocks\" : {  \n" +
+                "    \"xrb_1111111111111111111111111111111111111111111111111117353trpda\": [\"142A538F36833D1CC78B94E11C766F75818F8B940771335C6C1B8AB880C5BB1D\"]  \n" +
+                "  }  \n" +
+                "}";
+        httpMock.mock(request, response);
+
+        // when
+        List<String> pendings = operations.getPending("xrb_1111111111111111111111111111111111111111111111111117353trpda");
+
+        // then
+        assertEquals(singletonList("142A538F36833D1CC78B94E11C766F75818F8B940771335C6C1B8AB880C5BB1D"), pendings);
+    }
+
+    @Test
+    public void shouldReturnPendingTransactionMapWhenSendingMultipleAccount() {
+        // given
+        String request = "{  \n" +
+                "  \"action\": \"accounts_pending\",  \n" +
+                "  \"accounts\": [\"xrb_1111111111111111111111111111111111111111111111111117353trpda\", \"xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3\"],  \n" +
+                "  \"count\": \"9223372036854775807\" \n" +
+                "}";
+        String response = "{  \n" +
+                "  \"blocks\" : {  \n" +
+                "    \"xrb_1111111111111111111111111111111111111111111111111117353trpda\": [\"142A538F36833D1CC78B94E11C766F75818F8B940771335C6C1B8AB880C5BB1D\"],  \n" +
+                "    \"xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3\": [\"4C1FEEF0BEA7F50BE35489A1233FE002B212DEA554B55B1B470D78BD8F210C74\"]  \n" +
+                "  }  \n" +
+                "}";
+        httpMock.mock(request, response);
+
+        // when
+        List<String> accounts = Arrays.asList(
+                "xrb_1111111111111111111111111111111111111111111111111117353trpda",
+                "xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3"
+        );
+        Map<String, List<String>> pendings = operations.getPending(accounts);
+
+        // then
+        Map<String, List<String>> expectedPendings = ImmutableMap.of(
+                "xrb_1111111111111111111111111111111111111111111111111117353trpda", singletonList("142A538F36833D1CC78B94E11C766F75818F8B940771335C6C1B8AB880C5BB1D"),
+                "xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3", singletonList("4C1FEEF0BEA7F50BE35489A1233FE002B212DEA554B55B1B470D78BD8F210C74")
+        );
+        assertEquals(expectedPendings, pendings);
     }
 
 
