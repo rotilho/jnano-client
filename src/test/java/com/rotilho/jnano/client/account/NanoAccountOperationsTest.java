@@ -18,6 +18,7 @@ import java.util.Map;
 
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 
 public class NanoAccountOperationsTest {
@@ -209,6 +210,11 @@ public class NanoAccountOperationsTest {
                 "xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3", singletonList("4C1FEEF0BEA7F50BE35489A1233FE002B212DEA554B55B1B470D78BD8F210C74")
         );
         assertEquals(expectedPendings, pendings);
+    }
+
+    @Test
+    public void shouldReturnTrueWhenValidatingValidAddress() {
+        assertTrue(operations.isValid("xrb_1111111111111111111111111111111111111111111111111117353trpda"));
     }
 
 

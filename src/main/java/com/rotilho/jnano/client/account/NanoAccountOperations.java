@@ -74,6 +74,10 @@ public class NanoAccountOperations {
         return pendings.getBlocks();
     }
 
+    public boolean isValid(@Nonnull String account) {
+        return NanoAccounts.isValid(account);
+    }
+
     @Value
     private static class AccountInformationAction implements NanoAPIAction {
         private final String account;
