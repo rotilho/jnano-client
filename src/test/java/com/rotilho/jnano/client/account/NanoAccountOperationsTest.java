@@ -29,7 +29,7 @@ public class NanoAccountOperationsTest {
 
     @Before
     public void setUp() {
-        operations = new NanoAccountOperations(httpMock.getNanoAPI());
+        operations = NanoAccountOperations.of(httpMock.getNanoAPI());
     }
 
     @Test

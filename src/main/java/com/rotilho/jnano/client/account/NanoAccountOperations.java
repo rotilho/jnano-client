@@ -27,7 +27,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 
-@RequiredArgsConstructor
+@RequiredArgsConstructor(staticName = "of")
 public class NanoAccountOperations {
     @NonNull
     private final NanoAPI api;
