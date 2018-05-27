@@ -8,7 +8,6 @@ import com.rotilho.jnano.commons.NanoKeys;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
 import java.util.List;
@@ -56,7 +55,7 @@ public class NanoAccountOperationsTest {
 
         // then
         assertNotNull(information);
-        JSONAssert.assertEquals(response, JSON.stringify(information), JSONCompareMode.LENIENT);
+        assertEquals(response, JSON.stringify(information), JSONCompareMode.LENIENT);
     }
 
     @Test
@@ -142,6 +141,18 @@ public class NanoAccountOperationsTest {
                 "}\n";
 
         shouldReturnHistory("xrb_3igf8hd4sjshoibbbkeitmgkp1o6ug4xads43j6e4gqkj5xk5o83j8ja9php", block);
+    }
+
+    @Test
+    public void shouldReturnPublicKey() {
+        // given
+        String address = "nano_3iwi45me3cgo9aza9wx5f7rder37hw11xtc1ek8psqxw5oxb8cujjad6qp9y";
+
+        // when
+        byte[] publicKey = operations.toPublicKey(address);
+
+        // then
+        assertEquals(address, operations.create(publicKey));
     }
 
 

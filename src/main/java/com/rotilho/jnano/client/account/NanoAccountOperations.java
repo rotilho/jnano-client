@@ -52,6 +52,11 @@ public class NanoAccountOperations {
         return history.getHistory().stream().map(AccountHistoryEntry::toTransaction).collect(toList());
     }
 
+    @NonNull
+    public byte[] toPublicKey(@Nonnull String account) {
+        return NanoAccounts.toPublicKey(account);
+    }
+
     @Value
     private static class AccountInformationAction implements NanoAPIAction {
         private final String account;
