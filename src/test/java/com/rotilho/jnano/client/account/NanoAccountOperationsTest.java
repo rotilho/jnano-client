@@ -1,12 +1,14 @@
-package com.rotilho.jnano.client;
+package com.rotilho.jnano.client.account;
 
-import com.rotilho.jnano.client.NanoAccountOperations.AccountInformation;
+import com.rotilho.jnano.client.HttpMock;
+import com.rotilho.jnano.client.JSON;
 import com.rotilho.jnano.client.transaction.Transaction;
 import com.rotilho.jnano.commons.NanoKeys;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
 import java.util.List;
@@ -54,7 +56,7 @@ public class NanoAccountOperationsTest {
 
         // then
         assertNotNull(information);
-        assertEquals(response, JSON.stringify(information), JSONCompareMode.LENIENT);
+        JSONAssert.assertEquals(response, JSON.stringify(information), JSONCompareMode.LENIENT);
     }
 
     @Test

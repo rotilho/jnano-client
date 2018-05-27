@@ -1,9 +1,9 @@
-package com.rotilho.jnano.client;
+package com.rotilho.jnano.client.account;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.rotilho.jnano.client.NanoAPI;
+import com.rotilho.jnano.client.NanoAPIAction;
 import com.rotilho.jnano.client.block.NanoBlock;
 import com.rotilho.jnano.client.block.NanoChangeBlock;
 import com.rotilho.jnano.client.block.NanoOpenBlock;
@@ -14,10 +14,7 @@ import com.rotilho.jnano.client.transaction.Transaction;
 import com.rotilho.jnano.commons.NanoAccounts;
 
 import java.math.BigInteger;
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.TimeZone;
 
 import javax.annotation.Nonnull;
 
@@ -43,16 +40,17 @@ public class NanoAccountOperations {
         return NanoAccounts.createAccount(publicKey);
     }
 
+    @NonNull
     public List<Transaction<?>> getHistory(@Nonnull String account) {
         return getHistory(account, -1);
     }
 
+    @NonNull
     public List<Transaction<?>> getHistory(@Nonnull String account, @Nonnull Integer count) {
         AccountHistoryAction request = new AccountHistoryAction(account, count);
         AccountHistory history = api.execute(request, AccountHistory.class);
         return history.getHistory().stream().map(AccountHistoryEntry::toTransaction).collect(toList());
     }
-
 
     @Value
     private static class AccountInformationAction implements NanoAPIAction {
@@ -72,36 +70,6 @@ public class NanoAccountOperations {
 
         public String getPending() {
             return Boolean.TRUE.toString();
-        }
-    }
-
-    @Value
-    public static final class AccountInformation {
-        private final String frontier;
-        @JsonProperty("open_block")
-        private final String openBlock;
-        @JsonProperty("representative_block")
-        private final String representativeBlock;
-        @JsonSerialize(using = ToStringSerializer.class)
-        private final BigInteger balance;
-        @JsonSerialize(using = ToStringSerializer.class)
-        @JsonProperty("modified_timestamp")
-        private final Long modifiedTimestamp;
-        @JsonSerialize(using = ToStringSerializer.class)
-        @JsonProperty("block_count")
-        private final Long blockCount;
-        private final String representative;
-        @JsonSerialize(using = ToStringSerializer.class)
-        private final BigInteger weight;
-        @JsonSerialize(using = ToStringSerializer.class)
-        private final BigInteger pending;
-
-        @JsonIgnore
-        public LocalDateTime getModifiedDateTime() {
-            return LocalDateTime.ofInstant(
-                    Instant.ofEpochSecond(modifiedTimestamp),
-                    TimeZone.getDefault().toZoneId()
-            );
         }
     }
 
