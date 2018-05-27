@@ -165,7 +165,8 @@ public class NanoAccountOperationsTest {
         String request = "{  \n" +
                 "  \"action\": \"accounts_pending\",  \n" +
                 "  \"accounts\": [\"xrb_1111111111111111111111111111111111111111111111111117353trpda\"], \n" +
-                "  \"count\": \"9223372036854775807\" \n" +
+                "  \"count\": \"9223372036854775807\", \n" +
+                "  \"threshold\": \"0\" \n" +
                 "}";
         String response = "{  \n" +
                 "  \"blocks\" : {  \n" +
@@ -187,7 +188,8 @@ public class NanoAccountOperationsTest {
         String request = "{  \n" +
                 "  \"action\": \"accounts_pending\",  \n" +
                 "  \"accounts\": [\"xrb_1111111111111111111111111111111111111111111111111117353trpda\", \"xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3\"],  \n" +
-                "  \"count\": \"9223372036854775807\" \n" +
+                "  \"count\": \"9223372036854775807\", \n" +
+                "  \"threshold\": \"0\" \n" +
                 "}";
         String response = "{  \n" +
                 "  \"blocks\" : {  \n" +

@@ -62,14 +62,22 @@ public class NanoAccountOperations {
 
     @NonNull
     public List<String> getPending(@Nonnull String account) {
-        AccountPendingAction request = new AccountPendingAction(singletonList(account));
-        AccountPending pendings = api.execute(request, AccountPending.class);
-        return pendings.getBlocks().getOrDefault(account, emptyList());
+        return getPending(account, BigInteger.ZERO);
     }
 
     @NonNull
-    public Map<String, List<String>> getPending(@Nonnull List<String> account) {
-        AccountPendingAction request = new AccountPendingAction(account);
+    public List<String> getPending(@Nonnull String account, @Nonnull BigInteger threshold) {
+        return getPending(singletonList(account), threshold).getOrDefault(account, emptyList());
+    }
+
+    @NonNull
+    public Map<String, List<String>> getPending(@Nonnull List<String> accounts) {
+        return getPending(accounts, BigInteger.ZERO);
+    }
+
+    @NonNull
+    public Map<String, List<String>> getPending(@Nonnull List<String> accounts, @Nonnull BigInteger threshold) {
+        AccountPendingAction request = new AccountPendingAction(accounts, threshold);
         AccountPending pendings = api.execute(request, AccountPending.class);
         return pendings.getBlocks();
     }
@@ -157,6 +165,8 @@ public class NanoAccountOperations {
     @Value
     private static class AccountPendingAction implements NanoAPIAction {
         private final List<String> accounts;
+        @JsonSerialize(using = ToStringSerializer.class)
+        private final BigInteger threshold;
 
         public String getAction() {
             return "accounts_pending";
