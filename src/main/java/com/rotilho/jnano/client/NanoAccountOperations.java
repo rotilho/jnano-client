@@ -1,5 +1,6 @@
 package com.rotilho.jnano.client;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -13,7 +14,10 @@ import com.rotilho.jnano.client.transaction.Transaction;
 import com.rotilho.jnano.commons.NanoAccounts;
 
 import java.math.BigInteger;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.annotation.Nonnull;
 
@@ -91,6 +95,14 @@ public class NanoAccountOperations {
         private final BigInteger weight;
         @JsonSerialize(using = ToStringSerializer.class)
         private final BigInteger pending;
+
+        @JsonIgnore
+        public LocalDateTime getModifiedDateTime() {
+            return LocalDateTime.ofInstant(
+                    Instant.ofEpochSecond(modifiedTimestamp),
+                    TimeZone.getDefault().toZoneId()
+            );
+        }
     }
 
     @Value
@@ -137,18 +149,14 @@ public class NanoAccountOperations {
                 case "open":
                     return NanoOpenBlock.of(source, representative, account);
                 case "receive":
-                    return NanoReceiveBlock.of(previous, source);
+                    return NanoReceiveBlock.of(previous != null ? previous : "", source);
                 case "send":
-                    return NanoSendBlock.of(previous, destination, balance);
+                    return NanoSendBlock.of(previous != null ? previous : "", destination, balance);
                 case "change":
-                    return NanoChangeBlock.of(previous, representative);
+                    return NanoChangeBlock.of(previous != null ? previous : "", representative);
                 default:
-                    return NanoStateBlock.of(account, previous, representative, balance, link);
+                    return NanoStateBlock.of(account, previous != null ? previous : "", representative, balance != null ? balance : BigInteger.ZERO, link);
             }
         }
-
-
     }
-
-
 }
