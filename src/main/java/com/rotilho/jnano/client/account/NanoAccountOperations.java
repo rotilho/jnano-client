@@ -3,7 +3,7 @@ package com.rotilho.jnano.client.account;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.rotilho.jnano.client.NanoAPI;
-import com.rotilho.jnano.client.NanoAPIAction;
+import com.rotilho.jnano.client.NanoRequest;
 import com.rotilho.jnano.client.block.NanoBlock;
 import com.rotilho.jnano.client.block.NanoChangeBlock;
 import com.rotilho.jnano.client.block.NanoOpenBlock;
@@ -23,7 +23,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
-import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 
@@ -34,8 +34,15 @@ public class NanoAccountOperations {
 
     @Nonnull
     public AccountInformation getInfo(@Nonnull String account) {
-        AccountInformationAction request = new AccountInformationAction(account);
-        return api.execute(request, AccountInformation.class);
+        NanoRequest action = NanoRequest.builder()
+                .action("account_info")
+                .param("account", account)
+                .param("representative", Boolean.TRUE.toString())
+                .param("weight", Boolean.TRUE.toString())
+                .param("pending", Boolean.TRUE.toString())
+                .build();
+
+        return api.execute(action, AccountInformation.class);
     }
 
     @NonNull
@@ -50,8 +57,14 @@ public class NanoAccountOperations {
 
     @NonNull
     public List<Transaction<?>> getHistory(@Nonnull String account, @Nonnull Integer count) {
-        AccountHistoryAction request = new AccountHistoryAction(account, count);
-        AccountHistory history = api.execute(request, AccountHistory.class);
+        NanoRequest action = NanoRequest.builder()
+                .action("account_history")
+                .param("account", account)
+                .param("count", count.toString())
+                .param("raw", Boolean.TRUE.toString())
+                .build();
+
+        AccountHistory history = api.execute(action, AccountHistory.class);
         return history.getHistory().stream().map(AccountHistoryEntry::toTransaction).collect(toList());
     }
 
@@ -61,65 +74,35 @@ public class NanoAccountOperations {
     }
 
     @NonNull
-    public List<String> getPending(@Nonnull String account) {
-        return getPending(account, BigInteger.ZERO);
+    public Map<String, BigInteger> getPending(@Nonnull String account) {
+        return getPending(account, BigInteger.ONE);
     }
 
     @NonNull
-    public List<String> getPending(@Nonnull String account, @Nonnull BigInteger threshold) {
-        return getPending(singletonList(account), threshold).getOrDefault(account, emptyList());
+    public Map<String, BigInteger> getPending(@Nonnull String account, @Nonnull BigInteger threshold) {
+        return getPending(singletonList(account), threshold).getOrDefault(account, emptyMap());
     }
 
     @NonNull
-    public Map<String, List<String>> getPending(@Nonnull List<String> accounts) {
-        return getPending(accounts, BigInteger.ZERO);
+    public Map<String, Map<String, BigInteger>> getPending(@Nonnull List<String> accounts) {
+        return getPending(accounts, BigInteger.ONE);
     }
 
     @NonNull
-    public Map<String, List<String>> getPending(@Nonnull List<String> accounts, @Nonnull BigInteger threshold) {
-        AccountPendingAction request = new AccountPendingAction(accounts, threshold);
-        AccountPending pendings = api.execute(request, AccountPending.class);
-        return pendings.getBlocks();
+    public Map<String, Map<String, BigInteger>> getPending(@Nonnull List<String> accounts, @Nonnull BigInteger threshold) {
+        NanoRequest action = NanoRequest.builder()
+                .action("accounts_pending")
+                .param("accounts", accounts)
+                .param("threshold", threshold.toString())
+                .param("count", Long.MAX_VALUE + "")
+                .build();
+
+        AccountPending pending = api.execute(action, AccountPending.class);
+        return pending.getBlocks();
     }
 
     public boolean isValid(@Nonnull String account) {
         return NanoAccounts.isValid(account);
-    }
-
-    @Value
-    private static class AccountInformationAction implements NanoAPIAction {
-        private final String account;
-
-        public String getAction() {
-            return "account_info";
-        }
-
-        public String getRepresentative() {
-            return Boolean.TRUE.toString();
-        }
-
-        public String getWeight() {
-            return Boolean.TRUE.toString();
-        }
-
-        public String getPending() {
-            return Boolean.TRUE.toString();
-        }
-    }
-
-    @Value
-    private static class AccountHistoryAction implements NanoAPIAction {
-        private final String account;
-        @JsonSerialize(using = ToStringSerializer.class)
-        private final Integer count;
-
-        public String getAction() {
-            return "account_history";
-        }
-
-        public String getRaw() {
-            return Boolean.TRUE.toString();
-        }
     }
 
     @Value
@@ -151,35 +134,20 @@ public class NanoAccountOperations {
                 case "open":
                     return NanoOpenBlock.of(source, representative, account);
                 case "receive":
-                    return NanoReceiveBlock.of(previous != null ? previous : "", source);
+                    return NanoReceiveBlock.of(previous, source);
                 case "send":
-                    return NanoSendBlock.of(previous != null ? previous : "", destination, balance);
+                    return NanoSendBlock.of(previous, destination, balance);
                 case "change":
-                    return NanoChangeBlock.of(previous != null ? previous : "", representative);
+                    return NanoChangeBlock.of(previous, representative);
                 default:
-                    return NanoStateBlock.of(account, previous != null ? previous : "", representative, balance != null ? balance : BigInteger.ZERO, link);
+                    return NanoStateBlock.of(account, previous, representative, balance, link);
             }
-        }
-    }
-
-    @Value
-    private static class AccountPendingAction implements NanoAPIAction {
-        private final List<String> accounts;
-        @JsonSerialize(using = ToStringSerializer.class)
-        private final BigInteger threshold;
-
-        public String getAction() {
-            return "accounts_pending";
-        }
-
-        public String getCount() {
-            return Long.MAX_VALUE + "";
         }
     }
 
 
     @Value
     private static class AccountPending {
-        private final Map<String, List<String>> blocks;
+        private final Map<String, Map<String, BigInteger>> blocks;
     }
 }

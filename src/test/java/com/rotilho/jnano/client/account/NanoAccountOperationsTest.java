@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import com.rotilho.jnano.client.HttpMock;
 import com.rotilho.jnano.client.JSON;
 import com.rotilho.jnano.client.transaction.Transaction;
+import com.rotilho.jnano.commons.NanoHelper;
 import com.rotilho.jnano.commons.NanoKeys;
 
 import org.junit.Before;
@@ -12,11 +13,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
@@ -65,7 +67,7 @@ public class NanoAccountOperationsTest {
     @Test
     public void shouldCreateAccount() {
         // given
-        String seed = "1234567890123456789012345678901234567890123456789012345678901234";
+        byte[] seed = NanoHelper.toByteArray("1234567890123456789012345678901234567890123456789012345678901234");
         byte[] privateKey = NanoKeys.createPrivateKey(seed, 0);
         byte[] publicKey = NanoKeys.createPublicKey(privateKey);
 
@@ -166,20 +168,22 @@ public class NanoAccountOperationsTest {
                 "  \"action\": \"accounts_pending\",  \n" +
                 "  \"accounts\": [\"xrb_1111111111111111111111111111111111111111111111111117353trpda\"], \n" +
                 "  \"count\": \"9223372036854775807\", \n" +
-                "  \"threshold\": \"0\" \n" +
+                "  \"threshold\": \"1\" \n" +
                 "}";
         String response = "{  \n" +
-                "  \"blocks\" : {  \n" +
-                "    \"xrb_1111111111111111111111111111111111111111111111111117353trpda\": [\"142A538F36833D1CC78B94E11C766F75818F8B940771335C6C1B8AB880C5BB1D\"]  \n" +
-                "  }  \n" +
+                "  \"blocks\" : {\n" +
+                "    \"xrb_1111111111111111111111111111111111111111111111111117353trpda\": {    \n" +
+                "        \"142A538F36833D1CC78B94E11C766F75818F8B940771335C6C1B8AB880C5BB1D\": \"6000000000000000000000000000000\"    \n" +
+                "    }    \n" +
+                "   } \n" +
                 "}";
         httpMock.mock(request, response);
 
         // when
-        List<String> pendings = operations.getPending("xrb_1111111111111111111111111111111111111111111111111117353trpda");
+        Map<String, BigInteger> pending = operations.getPending("xrb_1111111111111111111111111111111111111111111111111117353trpda");
 
         // then
-        assertEquals(singletonList("142A538F36833D1CC78B94E11C766F75818F8B940771335C6C1B8AB880C5BB1D"), pendings);
+        assertEquals(singletonMap("142A538F36833D1CC78B94E11C766F75818F8B940771335C6C1B8AB880C5BB1D", new BigInteger("6000000000000000000000000000000")), pending);
     }
 
     @Test
@@ -189,13 +193,17 @@ public class NanoAccountOperationsTest {
                 "  \"action\": \"accounts_pending\",  \n" +
                 "  \"accounts\": [\"xrb_1111111111111111111111111111111111111111111111111117353trpda\", \"xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3\"],  \n" +
                 "  \"count\": \"9223372036854775807\", \n" +
-                "  \"threshold\": \"0\" \n" +
+                "  \"threshold\": \"1\" \n" +
                 "}";
         String response = "{  \n" +
-                "  \"blocks\" : {  \n" +
-                "    \"xrb_1111111111111111111111111111111111111111111111111117353trpda\": [\"142A538F36833D1CC78B94E11C766F75818F8B940771335C6C1B8AB880C5BB1D\"],  \n" +
-                "    \"xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3\": [\"4C1FEEF0BEA7F50BE35489A1233FE002B212DEA554B55B1B470D78BD8F210C74\"]  \n" +
-                "  }  \n" +
+                "  \"blocks\" : {\n" +
+                "    \"xrb_1111111111111111111111111111111111111111111111111117353trpda\": {    \n" +
+                "        \"142A538F36833D1CC78B94E11C766F75818F8B940771335C6C1B8AB880C5BB1D\": \"6000000000000000000000000000000\"    \n" +
+                "    },    \n" +
+                "    \"xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3\": {    \n" +
+                "        \"4C1FEEF0BEA7F50BE35489A1233FE002B212DEA554B55B1B470D78BD8F210C74\": \"106370018000000000000000000000000\"    \n" +
+                "    }  \n" +
+                "   } \n" +
                 "}";
         httpMock.mock(request, response);
 
@@ -204,14 +212,14 @@ public class NanoAccountOperationsTest {
                 "xrb_1111111111111111111111111111111111111111111111111117353trpda",
                 "xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3"
         );
-        Map<String, List<String>> pendings = operations.getPending(accounts);
+        Map<String, Map<String, BigInteger>> pending = operations.getPending(accounts);
 
         // then
-        Map<String, List<String>> expectedPendings = ImmutableMap.of(
-                "xrb_1111111111111111111111111111111111111111111111111117353trpda", singletonList("142A538F36833D1CC78B94E11C766F75818F8B940771335C6C1B8AB880C5BB1D"),
-                "xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3", singletonList("4C1FEEF0BEA7F50BE35489A1233FE002B212DEA554B55B1B470D78BD8F210C74")
+        Map<String, Map<String, BigInteger>> expectedPending = ImmutableMap.of(
+                "xrb_1111111111111111111111111111111111111111111111111117353trpda", singletonMap("142A538F36833D1CC78B94E11C766F75818F8B940771335C6C1B8AB880C5BB1D", new BigInteger("6000000000000000000000000000000")),
+                "xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3", singletonMap("4C1FEEF0BEA7F50BE35489A1233FE002B212DEA554B55B1B470D78BD8F210C74", new BigInteger("106370018000000000000000000000000"))
         );
-        assertEquals(expectedPendings, pendings);
+        assertEquals(expectedPending, pending);
     }
 
     @Test
