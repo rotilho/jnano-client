@@ -3,6 +3,7 @@ package com.rotilho.jnano.client.transaction;
 import com.rotilho.jnano.client.NanoAPI;
 import com.rotilho.jnano.client.account.NanoAccountInfo;
 import com.rotilho.jnano.client.account.NanoAccountOperations;
+import com.rotilho.jnano.client.amount.NanoAmount;
 import com.rotilho.jnano.client.block.NanoStateBlock;
 import com.rotilho.jnano.client.transaction.NanoTransactionOperations.BlockHash;
 import com.rotilho.jnano.client.work.NanoWorkOperations;
@@ -16,7 +17,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.UncheckedIOException;
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +36,7 @@ public class NanoTransactionOperationsTest {
     private final static String ACCOUNT = NanoAccounts.createAccount(PUBLIC_KEY);
     private final static String TARGET_ACCOUNT = "xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3";
     private final static String TARGET_HASH = "991CF190094C00F0B68E2E5F75F6BEE95A2E0BD93CEAA4A6734DB9F19B728948";
-    private final static BigInteger BALANCE = new BigInteger("100");
+    private final static NanoAmount BALANCE = NanoAmount.ofRaw("100");
     private final static String REPRESENTATIVE = "xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3";
     private final static String FRONTIER = "FF84533A571D953A596EA401FD41743AC85D04F406E76FDE4408EAED50B473C5";
 
@@ -53,7 +53,7 @@ public class NanoTransactionOperationsTest {
     @Test
     public void shouldSend() {
         // given
-        BigInteger amount = new BigInteger("70");
+        NanoAmount amount = NanoAmount.ofRaw("70");
 
         mockAccount();
         mockWork();
@@ -89,7 +89,7 @@ public class NanoTransactionOperationsTest {
                 PRIVATE_KEY,
                 FRONTIER,
                 TARGET_ACCOUNT,
-                new BigInteger("70")
+                NanoAmount.ofRaw("70")
         );
     }
 
@@ -106,32 +106,16 @@ public class NanoTransactionOperationsTest {
                 PRIVATE_KEY,
                 wrongHash,
                 TARGET_ACCOUNT,
-                new BigInteger("70")
-        );
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionWhenNotEnoughBalance() {
-        // given
-        String wrongHash = TARGET_HASH;
-
-        mockAccount();
-
-        // when
-        operations.send(
-                PRIVATE_KEY,
-                wrongHash,
-                TARGET_ACCOUNT,
-                BALANCE.multiply(BigInteger.valueOf(2))
+                NanoAmount.ofRaw("70")
         );
     }
 
     @Test
     public void shouldReceive() {
         // given
-        BigInteger amount = new BigInteger("50");
+        NanoAmount amount = NanoAmount.ofRaw("50");
 
-        Map<String, BigInteger> pending = of(TARGET_HASH, amount);
+        Map<String, NanoAmount> pending = of(TARGET_HASH, amount);
         given(accountOperations.getPending(ACCOUNT)).willReturn(pending);
 
         mockAccount();
@@ -149,7 +133,7 @@ public class NanoTransactionOperationsTest {
 
     }
 
-    private NanoTransaction<NanoStateBlock> createSendTransaction(BigInteger amount) {
+    private NanoTransaction<NanoStateBlock> createSendTransaction(NanoAmount amount) {
         NanoStateBlock block = NanoStateBlock.builder()
                 .account(ACCOUNT)
                 .previous(FRONTIER)
@@ -165,7 +149,7 @@ public class NanoTransactionOperationsTest {
     }
 
 
-    private NanoTransaction<NanoStateBlock> createReceiveTransaction(BigInteger amount) {
+    private NanoTransaction<NanoStateBlock> createReceiveTransaction(NanoAmount amount) {
         NanoStateBlock block = NanoStateBlock.builder()
                 .account(ACCOUNT)
                 .previous(FRONTIER)

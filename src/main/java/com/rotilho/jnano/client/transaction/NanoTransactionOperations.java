@@ -5,6 +5,7 @@ import com.rotilho.jnano.client.NanoAPI;
 import com.rotilho.jnano.client.NanoRequest;
 import com.rotilho.jnano.client.account.NanoAccountInfo;
 import com.rotilho.jnano.client.account.NanoAccountOperations;
+import com.rotilho.jnano.client.amount.NanoAmount;
 import com.rotilho.jnano.client.block.NanoStateBlock;
 import com.rotilho.jnano.client.work.NanoWorkOperations;
 import com.rotilho.jnano.commons.NanoAccounts;
@@ -13,7 +14,6 @@ import com.rotilho.jnano.commons.NanoSignatures;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -39,13 +39,13 @@ public class NanoTransactionOperations {
 
     public List<NanoTransaction<NanoStateBlock>> receive(@Nonnull byte[] privateKey) {
         String account = createAccount(privateKey);
-        Map<String, BigInteger> pending = accountOperations.getPending(account);
+        Map<String, NanoAmount> pending = accountOperations.getPending(account);
         return pending.entrySet().stream()
                 .map(entry -> receive(privateKey, account, entry.getKey(), entry.getValue()))
                 .collect(toList());
     }
 
-    private NanoTransaction<NanoStateBlock> receive(@Nonnull byte[] privateKey, @Nonnull String account, @Nonnull String hash, @Nonnull BigInteger amount) {
+    private NanoTransaction<NanoStateBlock> receive(@Nonnull byte[] privateKey, @Nonnull String account, @Nonnull String hash, @Nonnull NanoAmount amount) {
         NanoAccountInfo info = accountOperations.getInfo(account);
 
         NanoStateBlock block = NanoStateBlock.builder()
@@ -59,7 +59,7 @@ public class NanoTransactionOperations {
         return process(privateKey, block);
     }
 
-    public NanoTransaction<NanoStateBlock> send(@Nonnull byte[] privateKey, @Nonnull String previous, @Nonnull String targetAccount, @Nonnull BigInteger amount) {
+    public NanoTransaction<NanoStateBlock> send(@Nonnull byte[] privateKey, @Nonnull String previous, @Nonnull String targetAccount, @Nonnull NanoAmount amount) {
         String sourceAccount = createAccount(privateKey);
         NanoAccountInfo info = accountOperations.getInfo(sourceAccount);
 
@@ -67,10 +67,7 @@ public class NanoTransactionOperations {
             throw new IllegalArgumentException("Previous hash (" + previous + ")  is different from account frontier (" + info.getFrontier() + ")");
         }
 
-        BigInteger balance = info.getBalance().subtract(amount);
-        if (balance.signum() < 0) {
-            throw new IllegalArgumentException("Not enough balance (" + info.getBalance() + ") to send (" + amount + ")");
-        }
+        NanoAmount balance = info.getBalance().subtract(amount);
 
         NanoStateBlock block = NanoStateBlock.builder()
                 .account(sourceAccount)

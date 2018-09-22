@@ -2,9 +2,8 @@ package com.rotilho.jnano.client.block;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.rotilho.jnano.client.amount.NanoAmount;
 import com.rotilho.jnano.commons.NanoBlocks;
-
-import java.math.BigInteger;
 
 import lombok.Builder;
 import lombok.NonNull;
@@ -21,7 +20,7 @@ public class NanoStateBlock implements NanoBlock {
     private final String representative;
     @JsonSerialize(using = ToStringSerializer.class)
     @NonNull
-    private final BigInteger balance;
+    private final NanoAmount balance;
     @NonNull
     private final String link;
 
@@ -32,6 +31,6 @@ public class NanoStateBlock implements NanoBlock {
 
     @Override
     public String getHash() {
-        return NanoBlocks.hashStateBlock(account, previous, representative, balance, link);
+        return NanoBlocks.hashStateBlock(account, previous, representative, balance.toRaw().toBigInteger(), link);
     }
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.rotilho.jnano.client.amount.NanoAmount;
 
 import java.math.BigInteger;
 import java.time.Instant;
@@ -22,7 +23,7 @@ public final class NanoAccountInfo {
     @JsonProperty("representative_block")
     private final String representativeBlock;
     @JsonSerialize(using = ToStringSerializer.class)
-    private final BigInteger balance;
+    private final NanoAmount balance;
     @JsonSerialize(using = ToStringSerializer.class)
     @JsonProperty("modified_timestamp")
     private final Long modifiedTimestamp;
@@ -33,7 +34,7 @@ public final class NanoAccountInfo {
     @JsonSerialize(using = ToStringSerializer.class)
     private final BigInteger weight;
     @JsonSerialize(using = ToStringSerializer.class)
-    private final BigInteger pending;
+    private final NanoAmount pending;
 
     @JsonIgnore
     public LocalDateTime getModifiedDateTime() {

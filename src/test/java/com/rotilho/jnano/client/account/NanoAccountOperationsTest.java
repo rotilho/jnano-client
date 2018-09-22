@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 
 import com.rotilho.jnano.client.HttpMock;
 import com.rotilho.jnano.client.JSON;
+import com.rotilho.jnano.client.amount.NanoAmount;
 import com.rotilho.jnano.client.transaction.NanoTransaction;
 import com.rotilho.jnano.commons.NanoHelper;
 import com.rotilho.jnano.commons.NanoKeys;
@@ -13,7 +14,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -180,10 +180,10 @@ public class NanoAccountOperationsTest {
         httpMock.mock(request, response);
 
         // when
-        Map<String, BigInteger> pending = operations.getPending("xrb_1111111111111111111111111111111111111111111111111117353trpda");
+        Map<String, NanoAmount> pending = operations.getPending("xrb_1111111111111111111111111111111111111111111111111117353trpda");
 
         // then
-        assertEquals(singletonMap("142A538F36833D1CC78B94E11C766F75818F8B940771335C6C1B8AB880C5BB1D", new BigInteger("6000000000000000000000000000000")), pending);
+        assertEquals(singletonMap("142A538F36833D1CC78B94E11C766F75818F8B940771335C6C1B8AB880C5BB1D", NanoAmount.ofRaw("6000000000000000000000000000000")), pending);
     }
 
     @Test
@@ -212,12 +212,13 @@ public class NanoAccountOperationsTest {
                 "xrb_1111111111111111111111111111111111111111111111111117353trpda",
                 "xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3"
         );
-        Map<String, Map<String, BigInteger>> pending = operations.getPending(accounts);
+        Map<String, Map<String, NanoAmount>> pending = operations.getPending(accounts);
 
         // then
-        Map<String, Map<String, BigInteger>> expectedPending = ImmutableMap.of(
-                "xrb_1111111111111111111111111111111111111111111111111117353trpda", singletonMap("142A538F36833D1CC78B94E11C766F75818F8B940771335C6C1B8AB880C5BB1D", new BigInteger("6000000000000000000000000000000")),
-                "xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3", singletonMap("4C1FEEF0BEA7F50BE35489A1233FE002B212DEA554B55B1B470D78BD8F210C74", new BigInteger("106370018000000000000000000000000"))
+
+        Map<String, Map<String, NanoAmount>> expectedPending = ImmutableMap.of(
+                "xrb_1111111111111111111111111111111111111111111111111117353trpda", singletonMap("142A538F36833D1CC78B94E11C766F75818F8B940771335C6C1B8AB880C5BB1D", NanoAmount.ofRaw("6000000000000000000000000000000")),
+                "xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3", singletonMap("4C1FEEF0BEA7F50BE35489A1233FE002B212DEA554B55B1B470D78BD8F210C74", NanoAmount.ofRaw("106370018000000000000000000000000"))
         );
         assertEquals(expectedPending, pending);
     }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.rotilho.jnano.client.NanoAPI;
 import com.rotilho.jnano.client.NanoRequest;
+import com.rotilho.jnano.client.amount.NanoAmount;
 import com.rotilho.jnano.client.block.NanoBlock;
 import com.rotilho.jnano.client.block.NanoChangeBlock;
 import com.rotilho.jnano.client.block.NanoOpenBlock;
@@ -13,7 +14,7 @@ import com.rotilho.jnano.client.block.NanoStateBlock;
 import com.rotilho.jnano.client.transaction.NanoTransaction;
 import com.rotilho.jnano.commons.NanoAccounts;
 
-import java.math.BigInteger;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -77,13 +78,13 @@ public class NanoAccountOperations {
     }
 
     @NonNull
-    public Map<String, BigInteger> getPending(@Nonnull String account) {
-        return getPending(account, BigInteger.ONE);
+    public Map<String, NanoAmount> getPending(@Nonnull String account) {
+        return getPending(account, NanoAmount.ofRaw(BigDecimal.ONE));
     }
 
     @NonNull
-    public Map<String, BigInteger> getPending(@Nonnull String account, @Nonnull BigInteger threshold) {
-        Map<String, Map<String, BigInteger>> pending = getPending(singletonList(account), threshold);
+    public Map<String, NanoAmount> getPending(@Nonnull String account, @Nonnull NanoAmount threshold) {
+        Map<String, Map<String, NanoAmount>> pending = getPending(singletonList(account), threshold);
         pending.values().remove(null);
         String anotherPrefix = account.startsWith("nano_") ? account.replaceFirst("nano_", "xrb_") : account.replaceFirst("xrb_", "nano_");
         if (pending.containsKey(anotherPrefix)) {
@@ -93,12 +94,12 @@ public class NanoAccountOperations {
     }
 
     @NonNull
-    public Map<String, Map<String, BigInteger>> getPending(@Nonnull List<String> accounts) {
-        return getPending(accounts, BigInteger.ONE);
+    public Map<String, Map<String, NanoAmount>> getPending(@Nonnull List<String> accounts) {
+        return getPending(accounts, NanoAmount.ofRaw(BigDecimal.ONE));
     }
 
     @NonNull
-    public Map<String, Map<String, BigInteger>> getPending(@Nonnull List<String> accounts, @Nonnull BigInteger threshold) {
+    public Map<String, Map<String, NanoAmount>> getPending(@Nonnull List<String> accounts, @Nonnull NanoAmount threshold) {
         NanoRequest action = NanoRequest.builder()
                 .action("accounts_pending")
                 .param("accounts", accounts)
@@ -132,7 +133,7 @@ public class NanoAccountOperations {
         private final String destination;
         private final String link;
         @JsonSerialize(using = ToStringSerializer.class)
-        private final BigInteger balance;
+        private final NanoAmount balance;
         private final String signature;
         private final String work;
 
@@ -187,6 +188,6 @@ public class NanoAccountOperations {
 
     @Value
     private static class AccountPending {
-        private final Map<String, Map<String, BigInteger>> blocks;
+        private final Map<String, Map<String, NanoAmount>> blocks;
     }
 }

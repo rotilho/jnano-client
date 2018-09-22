@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit;
 
 import lombok.Builder;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.Singular;
 import lombok.Value;
 import okhttp3.Headers;
@@ -17,16 +16,22 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-@Builder
-@RequiredArgsConstructor
 public class NanoAPI {
     private static final MediaType MEDIA_TYPE = MediaType.parse("application/json; charset=utf-8");
-    private static final OkHttpClient CLIENT = new OkHttpClient.Builder().readTimeout(15, TimeUnit.SECONDS).build();
 
-    @NonNull
     private final String endpoint;
-    @Singular
+    private final OkHttpClient client;
     private final Map<String, String> headers;
+
+    @Builder
+    public NanoAPI(@NonNull String endpoint, Integer connectTimeoutMillis, Integer readTimeoutMillis, @NonNull @Singular Map<String, String> headers) {
+        this.endpoint = endpoint;
+        this.headers = headers;
+        this.client = new OkHttpClient.Builder()
+                .connectTimeout(connectTimeoutMillis != null ? connectTimeoutMillis : 10_000, TimeUnit.MILLISECONDS)
+                .readTimeout(readTimeoutMillis != null ? readTimeoutMillis : 10_000, TimeUnit.MILLISECONDS)
+                .build();
+    }
 
     @NonNull
     public <T> T execute(@NonNull NanoRequest action, @NonNull Class<T> clazz) {
@@ -36,7 +41,7 @@ public class NanoAPI {
                 .url(endpoint)
                 .post(body)
                 .build();
-        try (Response response = CLIENT.newCall(request).execute()) {
+        try (Response response = client.newCall(request).execute()) {
             checkSuccess(action, response);
             String json = response.body().string();
             checkError(action, json);
