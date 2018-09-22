@@ -17,7 +17,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-@Value
 @Builder
 @RequiredArgsConstructor
 public class NanoAPI {
@@ -30,32 +29,30 @@ public class NanoAPI {
     private final Map<String, String> headers;
 
     @NonNull
-    public <T> T execute(@NonNull NanoAPIAction action, @NonNull Class<T> clazz) {
-        try {
-            RequestBody body = RequestBody.create(MEDIA_TYPE, JSON.stringify(action));
-            Request request = new Request.Builder()
-                    .headers(Headers.of(headers))
-                    .url(endpoint)
-                    .post(body)
-                    .build();
-            try (Response response = CLIENT.newCall(request).execute()) {
-                checkSuccess(action, response);
-                String json = response.body().string();
-                checkError(action, json);
-                return JSON.parse(json, clazz);
-            }
+    public <T> T execute(@NonNull NanoRequest action, @NonNull Class<T> clazz) {
+        RequestBody body = RequestBody.create(MEDIA_TYPE, JSON.stringify(action));
+        Request request = new Request.Builder()
+                .headers(Headers.of(headers))
+                .url(endpoint)
+                .post(body)
+                .build();
+        try (Response response = CLIENT.newCall(request).execute()) {
+            checkSuccess(action, response);
+            String json = response.body().string();
+            checkError(action, json);
+            return JSON.parse(json, clazz);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
-    private void checkSuccess(NanoAPIAction action, Response response) {
+    private void checkSuccess(NanoRequest action, Response response) {
         if (!response.isSuccessful()) {
             throw new UncheckedIOException(new IOException("Request to " + endpoint + " failed because " + response.message() + "(" + response.code() + "). Action " + action));
         }
     }
 
-    private void checkError(NanoAPIAction action, String json) throws IOException {
+    private void checkError(NanoRequest action, String json) throws IOException {
         RPCError error = JSON.parse(json, RPCError.class);
         if (error.getError() != null) {
             throw new UncheckedIOException(new IOException("Request to " + endpoint + " failed because '" + error.getError() + "'. Action " + action));

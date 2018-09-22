@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 
 import com.rotilho.jnano.client.HttpMock;
 import com.rotilho.jnano.client.JSON;
-import com.rotilho.jnano.client.transaction.Transaction;
+import com.rotilho.jnano.client.transaction.NanoTransaction;
 import com.rotilho.jnano.commons.NanoHelper;
 import com.rotilho.jnano.commons.NanoKeys;
 
@@ -58,7 +58,7 @@ public class NanoAccountOperationsTest {
         httpMock.mock(request, response);
 
         // when
-        AccountInformation information = operations.getInfo("xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3");
+        NanoAccountInfo information = operations.getInfo("xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3");
 
         // then
         assertEquals(response, JSON.stringify(information), JSONCompareMode.LENIENT);
@@ -85,7 +85,7 @@ public class NanoAccountOperationsTest {
                 "         \"type\":\"open\",\n" +
                 "         \"source\":\"19D3D919475DEED4696B5D13018151D1AF88B2BD3BCFF048B45031C1F36D1858\",\n" +
                 "         \"representative\":\"xrb_1hza3f7wiiqa7ig3jczyxj5yo86yegcmqk3criaz838j91sxcckpfhbhhra1\",\n" +
-                "         \"account\":\"xrb_3kdbxitaj7f6mrir6miiwtw4muhcc58e6tn5st6rfaxsdnb7gr4roudwn951\",\n" +
+                "         \"account\":\"xrb_1hza3f7wiiqa7ig3jczyxj5yo86yegcmqk3criaz838j91sxcckpfhbhhra1\",\n" +
                 "         \"work\":\"4ec76c9bda2325ed\",\n" +
                 "         \"signature\":\"5974324F8CC42DA56F62FC212A17886BDCB18DE363D04DA84EEDC99CB4A33919D14A2CF9DE9D534FAA6D0B91D01F0622205D898293525E692586C84F2DCF9208\"\n" +
                 "}\n";
@@ -244,7 +244,7 @@ public class NanoAccountOperationsTest {
         httpMock.mock(request, response);
 
         // when
-        List<Transaction<?>> transactions = operations.getHistory(account);
+        List<NanoTransaction<?>> transactions = operations.getHistory(account);
 
         // then
         assertEquals(block, JSON.stringify(transactions.get(0)), JSONCompareMode.LENIENT);

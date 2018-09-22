@@ -6,10 +6,12 @@ import com.rotilho.jnano.commons.NanoBlocks;
 
 import java.math.BigInteger;
 
+import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
-@Value(staticConstructor = "of")
+@Value
+@Builder
 public class NanoStateBlock implements NanoBlock {
     @NonNull
     private final String account;

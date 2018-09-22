@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
-public class NanoWorkOperationsTest {
+public class NanoRemoteWorkOperationsTest {
 
     @Rule
     public HttpMock httpMock = new HttpMock();
@@ -17,7 +17,7 @@ public class NanoWorkOperationsTest {
 
     @Before
     public void setUp() {
-        operations = NanoWorkOperations.of(httpMock.getNanoAPI());
+        operations = NanoRemoteWorkOperations.of(httpMock.getNanoAPI());
     }
 
 
@@ -34,7 +34,7 @@ public class NanoWorkOperationsTest {
         httpMock.mock(request, response);
 
         // when
-        String work = operations.generate("718CC2121C3E641059BC1C2CFC45666C99E8AE922F7A807B7D07B62C995D79E2");
+        String work = operations.perform("718CC2121C3E641059BC1C2CFC45666C99E8AE922F7A807B7D07B62C995D79E2");
 
         // then
         assertEquals("2bf29ef00786a6bc", work);

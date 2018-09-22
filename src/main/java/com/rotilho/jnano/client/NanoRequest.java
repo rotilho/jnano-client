@@ -11,7 +11,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class NanoRequest implements NanoAPIAction {
+public class NanoRequest {
     @NonNull
     private final String action;
     @Singular

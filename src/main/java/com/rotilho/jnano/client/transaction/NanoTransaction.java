@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.rotilho.jnano.client.block.NanoBlock;
 
+import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
-@Value(staticConstructor = "of")
-public final class Transaction<T extends NanoBlock> {
+@Value
+@Builder
+public final class NanoTransaction<T extends NanoBlock> {
     @JsonUnwrapped
     @NonNull
     private final T block;

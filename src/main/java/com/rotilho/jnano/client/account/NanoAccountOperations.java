@@ -10,7 +10,7 @@ import com.rotilho.jnano.client.block.NanoOpenBlock;
 import com.rotilho.jnano.client.block.NanoReceiveBlock;
 import com.rotilho.jnano.client.block.NanoSendBlock;
 import com.rotilho.jnano.client.block.NanoStateBlock;
-import com.rotilho.jnano.client.transaction.Transaction;
+import com.rotilho.jnano.client.transaction.NanoTransaction;
 import com.rotilho.jnano.commons.NanoAccounts;
 
 import java.math.BigInteger;
@@ -23,6 +23,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
@@ -33,7 +34,7 @@ public class NanoAccountOperations {
     private final NanoAPI api;
 
     @Nonnull
-    public AccountInformation getInfo(@Nonnull String account) {
+    public NanoAccountInfo getInfo(@Nonnull String account) {
         NanoRequest action = NanoRequest.builder()
                 .action("account_info")
                 .param("account", account)
@@ -42,7 +43,7 @@ public class NanoAccountOperations {
                 .param("pending", Boolean.TRUE.toString())
                 .build();
 
-        return api.execute(action, AccountInformation.class);
+        return api.execute(action, NanoAccountInfo.class);
     }
 
     @NonNull
@@ -51,12 +52,12 @@ public class NanoAccountOperations {
     }
 
     @NonNull
-    public List<Transaction<?>> getHistory(@Nonnull String account) {
+    public List<NanoTransaction<?>> getHistory(@Nonnull String account) {
         return getHistory(account, -1);
     }
 
     @NonNull
-    public List<Transaction<?>> getHistory(@Nonnull String account, @Nonnull Integer count) {
+    public List<NanoTransaction<?>> getHistory(@Nonnull String account, @Nonnull Integer count) {
         NanoRequest action = NanoRequest.builder()
                 .action("account_history")
                 .param("account", account)
@@ -65,7 +66,9 @@ public class NanoAccountOperations {
                 .build();
 
         AccountHistory history = api.execute(action, AccountHistory.class);
-        return history.getHistory().stream().map(AccountHistoryEntry::toTransaction).collect(toList());
+        return history.getHistory().stream()
+                .map(a -> a.toTransaction(account))
+                .collect(toList());
     }
 
     @NonNull
@@ -80,7 +83,13 @@ public class NanoAccountOperations {
 
     @NonNull
     public Map<String, BigInteger> getPending(@Nonnull String account, @Nonnull BigInteger threshold) {
-        return getPending(singletonList(account), threshold).getOrDefault(account, emptyMap());
+        Map<String, Map<String, BigInteger>> pending = getPending(singletonList(account), threshold);
+        pending.values().remove(null);
+        String anotherPrefix = account.startsWith("nano_") ? account.replaceFirst("nano_", "xrb_") : account.replaceFirst("xrb_", "nano_");
+        if (pending.containsKey(anotherPrefix)) {
+            return pending.get(anotherPrefix);
+        }
+        return pending.getOrDefault(account, emptyMap());
     }
 
     @NonNull
@@ -108,6 +117,10 @@ public class NanoAccountOperations {
     @Value
     private static class AccountHistory {
         private final List<AccountHistoryEntry> history;
+
+        public List<AccountHistoryEntry> getHistory() {
+            return history != null ? history : emptyList();
+        }
     }
 
     @Value
@@ -116,7 +129,6 @@ public class NanoAccountOperations {
         private final String previous;
         private final String representative;
         private final String source;
-        private final String account;
         private final String destination;
         private final String link;
         @JsonSerialize(using = ToStringSerializer.class)
@@ -124,12 +136,19 @@ public class NanoAccountOperations {
         private final String signature;
         private final String work;
 
-        private Transaction<?> toTransaction() {
-            NanoBlock block = toBlock();
-            return Transaction.of(block, signature, work);
+        /**
+         * The account field returned by the node is the sender account not the requested account
+         */
+        private NanoTransaction<?> toTransaction(String account) {
+            NanoBlock block = toBlock(account);
+            return NanoTransaction.builder()
+                    .block(block)
+                    .signature(signature)
+                    .work(work)
+                    .build();
         }
 
-        private NanoBlock toBlock() {
+        private NanoBlock toBlock(String account) {
             switch (type) {
                 case "open":
                     return NanoOpenBlock.of(source, representative, account);
@@ -140,7 +159,13 @@ public class NanoAccountOperations {
                 case "change":
                     return NanoChangeBlock.of(previous, representative);
                 default:
-                    return NanoStateBlock.of(account, previous, representative, balance, link);
+                    return NanoStateBlock.builder()
+                            .account(account)
+                            .previous(previous)
+                            .representative(representative)
+                            .balance(balance)
+                            .link(link)
+                            .build();
             }
         }
     }

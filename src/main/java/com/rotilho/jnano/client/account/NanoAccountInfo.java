@@ -10,10 +10,12 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.TimeZone;
 
+import lombok.Builder;
 import lombok.Value;
 
 @Value
-public final class AccountInformation {
+@Builder
+public final class NanoAccountInfo {
     private final String frontier;
     @JsonProperty("open_block")
     private final String openBlock;

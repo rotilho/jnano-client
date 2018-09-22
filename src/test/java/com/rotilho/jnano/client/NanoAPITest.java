@@ -28,7 +28,7 @@ public class NanoAPITest {
         stubFor(post(urlEqualTo("/")).willReturn(aResponse().withStatus(500).withStatusMessage("Internal Server Error")));
 
         // when
-        nanoAPI.execute(() -> "action", Object.class);
+        nanoAPI.execute(NanoRequest.builder().action("action").build(), Object.class);
     }
 
 }
