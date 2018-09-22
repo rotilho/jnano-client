@@ -2,10 +2,12 @@ package com.rotilho.jnano.client.block;
 
 import com.rotilho.jnano.commons.NanoBlocks;
 
+import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
-@Value(staticConstructor = "of")
+@Value
+@Builder
 public class NanoOpenBlock implements NanoBlock {
     @NonNull
     private final String source;

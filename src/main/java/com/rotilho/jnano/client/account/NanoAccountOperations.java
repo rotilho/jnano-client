@@ -151,13 +151,27 @@ public class NanoAccountOperations {
         private NanoBlock toBlock(String account) {
             switch (type) {
                 case "open":
-                    return NanoOpenBlock.of(source, representative, account);
+                    return NanoOpenBlock.builder()
+                            .source(source)
+                            .representative(representative)
+                            .account(account)
+                            .build();
                 case "receive":
-                    return NanoReceiveBlock.of(previous, source);
+                    return NanoReceiveBlock.builder()
+                            .previous(previous)
+                            .source(source)
+                            .build();
                 case "send":
-                    return NanoSendBlock.of(previous, destination, balance);
+                    return NanoSendBlock.builder()
+                            .previous(previous)
+                            .destination(destination)
+                            .balance(balance)
+                            .build();
                 case "change":
-                    return NanoChangeBlock.of(previous, representative);
+                    return NanoChangeBlock.builder()
+                            .previous(previous)
+                            .representative(representative)
+                            .build();
                 default:
                     return NanoStateBlock.builder()
                             .account(account)

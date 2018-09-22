@@ -14,7 +14,11 @@ public class NanoOpenBlockTest {
         String account = "xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3";
 
         // when
-        NanoOpenBlock block = NanoOpenBlock.of(source, representative, account);
+        NanoOpenBlock block = NanoOpenBlock.builder()
+                .source(source)
+                .representative(representative)
+                .account(account)
+                .build();
 
         // then
         assertEquals("991CF190094C00F0B68E2E5F75F6BEE95A2E0BD93CEAA4A6734DB9F19B728948", block.getHash());

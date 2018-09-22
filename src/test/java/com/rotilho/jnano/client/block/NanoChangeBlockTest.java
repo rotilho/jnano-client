@@ -13,7 +13,10 @@ public class NanoChangeBlockTest {
         String representative = "xrb_18gmu6engqhgtjnppqam181o5nfhj4sdtgyhy36dan3jr9spt84rzwmktafc";
 
         // when
-        NanoChangeBlock block = NanoChangeBlock.of(previous, representative);
+        NanoChangeBlock block = NanoChangeBlock.builder()
+                .previous(previous)
+                .representative(representative)
+                .build();
 
         // then
         assertEquals("654FA425CEBFC9E7726089E4EDE7A105462D93DBC915FFB70B50909920A7D286", block.getHash());

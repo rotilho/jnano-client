@@ -13,7 +13,10 @@ public class NanoReceiveBlockTest {
         String source = "ED9554BD4D0F3BDCC8A7BDED5DEF09C503F4E94EF3698047441EFBBCC0D241F7";
 
         // when
-        NanoReceiveBlock block = NanoReceiveBlock.of(previous, source);
+        NanoReceiveBlock block = NanoReceiveBlock.builder()
+                .previous(previous)
+                .source(source)
+                .build();
 
         // then
         assertEquals("49876A7B00159C2F6EEB33BEAEE07FC637F4A29DD9631DFFD3DA015DE2165FE6", block.getHash());

@@ -16,7 +16,11 @@ public class NanoSendBlockTest {
         BigInteger balance = new BigInteger("337010421085160209006996005437231978653");
 
         // when
-        NanoSendBlock block = NanoSendBlock.of(previous, destination, balance);
+        NanoSendBlock block = NanoSendBlock.builder()
+                .previous(previous)
+                .destination(destination)
+                .balance(balance)
+                .build();
 
         // then
         assertEquals("A170D51B94E00371ACE76E35AC81DC9405D5D04D4CEBC399AEACE07AE05DD293", block.getHash());
