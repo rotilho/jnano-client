@@ -17,9 +17,11 @@ import org.skyscreamer.jsonassert.JSONCompareMode;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.skyscreamer.jsonassert.JSONAssert.assertEquals;
 
@@ -58,10 +60,32 @@ public class NanoAccountOperationsTest {
         httpMock.mock(request, response);
 
         // when
-        NanoAccountInfo information = operations.getInfo("xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3");
+        NanoAccountInfo information = operations.getInfoOrFail("xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3");
 
         // then
         assertEquals(response, JSON.stringify(information), JSONCompareMode.LENIENT);
+    }
+
+    @Test
+    public void shouldReturnInfoWhenAccountDoesNotExists() {
+        // given
+        String request = "{  \n" +
+                "  \"action\": \"account_info\",  \n" +
+                "  \"account\": \"xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3\",    \n" +
+                "  \"representative\": \"true\",  \n" +
+                "  \"weight\": \"true\",  \n" +
+                "  \"pending\": \"true\"  \n" +
+                "}";
+        String response = "{  \n" +
+                "    \"error\": \"Account not found\"   \n" +
+                "}";
+        httpMock.mock(request, response);
+
+        // when
+        Optional<NanoAccountInfo> info = operations.getInfo("xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3");
+
+        // then
+        assertFalse(info.isPresent());
     }
 
     @Test
@@ -250,6 +274,4 @@ public class NanoAccountOperationsTest {
         // then
         assertEquals(block, JSON.stringify(transactions.get(0)), JSONCompareMode.LENIENT);
     }
-
-
 }

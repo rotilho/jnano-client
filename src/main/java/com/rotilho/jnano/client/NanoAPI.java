@@ -34,17 +34,17 @@ public class NanoAPI {
     }
 
     @NonNull
-    public <T> T execute(@NonNull NanoRequest action, @NonNull Class<T> clazz) {
-        RequestBody body = RequestBody.create(MEDIA_TYPE, JSON.stringify(action));
+    public <T> T execute(@NonNull NanoRequest nanoRequest, @NonNull Class<T> clazz) {
+        RequestBody body = RequestBody.create(MEDIA_TYPE, JSON.stringify(nanoRequest));
         Request request = new Request.Builder()
                 .headers(Headers.of(headers))
                 .url(endpoint)
                 .post(body)
                 .build();
         try (Response response = client.newCall(request).execute()) {
-            checkSuccess(action, response);
+            checkSuccess(nanoRequest, response);
             String json = response.body().string();
-            checkError(action, json);
+            checkError(nanoRequest, json);
             return JSON.parse(json, clazz);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
@@ -57,16 +57,17 @@ public class NanoAPI {
         }
     }
 
-    private void checkError(NanoRequest action, String json) throws IOException {
+    private void checkError(NanoRequest request, String json) {
         RPCError error = JSON.parse(json, RPCError.class);
         if (error.getError() != null) {
-            throw new UncheckedIOException(new IOException("Request to " + endpoint + " failed because '" + error.getError() + "'. Action " + action));
+            throw new NanoAPIException(request, error.getError(), error.getMessage());
         }
     }
 
     @Value
     private static class RPCError {
         private String error;
+        private String message;
     }
 
 

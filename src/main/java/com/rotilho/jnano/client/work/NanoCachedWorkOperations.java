@@ -2,8 +2,8 @@ package com.rotilho.jnano.client.work;
 
 import com.rotilho.jnano.commons.NanoPOWs;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.Nonnull;
 
@@ -13,7 +13,7 @@ import lombok.Value;
 @Value(staticConstructor = "of")
 public class NanoCachedWorkOperations implements NanoWorkOperations {
     private final NanoWorkOperations operations;
-    private final Map<String, String> cache = new HashMap<>();
+    private final Map<String, String> cache = new ConcurrentHashMap<>();
 
     @Override
     public String perform(@Nonnull String hash) {

@@ -9,13 +9,17 @@ import com.rotilho.jnano.client.amount.NanoAmount;
 import com.rotilho.jnano.client.block.NanoStateBlock;
 import com.rotilho.jnano.client.work.NanoWorkOperations;
 import com.rotilho.jnano.commons.NanoAccounts;
+import com.rotilho.jnano.commons.NanoHelper;
 import com.rotilho.jnano.commons.NanoKeys;
 import com.rotilho.jnano.commons.NanoSignatures;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 
@@ -37,16 +41,42 @@ public class NanoTransactionOperations {
     @NonNull
     private final NanoWorkOperations workOperations;
 
+    public Optional<NanoTransaction<NanoStateBlock>> open(@Nonnull byte[] privateKey, @NonNull String representative) {
+        byte[] publicKey = NanoKeys.createPublicKey(privateKey);
+        String account = NanoAccounts.createAccount(publicKey);
+
+        Set<Map.Entry<String, NanoAmount>> pending = accountOperations.getPending(account).entrySet();
+        if (pending.isEmpty()) {
+            return Optional.empty();
+        }
+
+        String work = workOperations.perform(NanoHelper.toHex(publicKey));
+
+        Map.Entry<String, NanoAmount> firstPending = pending.iterator().next();
+        NanoStateBlock block = NanoStateBlock.builder()
+                .account(account)
+                .previous("0000000000000000000000000000000000000000000000000000000000000000")
+                .representative(representative)
+                .balance(firstPending.getValue())
+                .link(firstPending.getKey())
+                .build();
+        return Optional.of(process(privateKey, block, work));
+    }
+
     public List<NanoTransaction<NanoStateBlock>> receive(@Nonnull byte[] privateKey) {
+        return receive(privateKey, NanoAmount.ofRaw(BigDecimal.ONE));
+    }
+
+    public List<NanoTransaction<NanoStateBlock>> receive(@Nonnull byte[] privateKey, NanoAmount threshold) {
         String account = createAccount(privateKey);
-        Map<String, NanoAmount> pending = accountOperations.getPending(account);
+        Map<String, NanoAmount> pending = accountOperations.getPending(account, threshold);
         return pending.entrySet().stream()
                 .map(entry -> receive(privateKey, account, entry.getKey(), entry.getValue()))
                 .collect(toList());
     }
 
     private NanoTransaction<NanoStateBlock> receive(@Nonnull byte[] privateKey, @Nonnull String account, @Nonnull String hash, @Nonnull NanoAmount amount) {
-        NanoAccountInfo info = accountOperations.getInfo(account);
+        NanoAccountInfo info = accountOperations.getInfoOrFail(account);
 
         NanoStateBlock block = NanoStateBlock.builder()
                 .account(account)
@@ -61,7 +91,7 @@ public class NanoTransactionOperations {
 
     public NanoTransaction<NanoStateBlock> send(@Nonnull byte[] privateKey, @Nonnull String previous, @Nonnull String targetAccount, @Nonnull NanoAmount amount) {
         String sourceAccount = createAccount(privateKey);
-        NanoAccountInfo info = accountOperations.getInfo(sourceAccount);
+        NanoAccountInfo info = accountOperations.getInfoOrFail(sourceAccount);
 
         if (!info.getFrontier().equals(previous)) {
             throw new IllegalArgumentException("Previous hash (" + previous + ")  is different from account frontier (" + info.getFrontier() + ")");
@@ -79,9 +109,27 @@ public class NanoTransactionOperations {
         return process(privateKey, block);
     }
 
+    public NanoTransaction<NanoStateBlock> change(@Nonnull byte[] privateKey, @NonNull String representative) {
+        String account = createAccount(privateKey);
+        NanoAccountInfo info = accountOperations.getInfoOrFail(account);
+
+        NanoStateBlock block = NanoStateBlock.builder()
+                .account(account)
+                .previous(info.getFrontier())
+                .representative(representative)
+                .balance(info.getBalance())
+                .link("0000000000000000000000000000000000000000000000000000000000000000")
+                .build();
+        return process(privateKey, block);
+    }
+
     public NanoTransaction<NanoStateBlock> process(@Nonnull byte[] privateKey, @Nonnull NanoStateBlock block) {
-        String signature = NanoSignatures.sign(privateKey, block.getHash());
         String work = workOperations.perform(block.getPrevious());
+        return process(privateKey, block, work);
+    }
+
+    public NanoTransaction<NanoStateBlock> process(@Nonnull byte[] privateKey, @Nonnull NanoStateBlock block, @NonNull String work) {
+        String signature = NanoSignatures.sign(privateKey, block.getHash());
         NanoTransaction<NanoStateBlock> transaction = NanoTransaction.<NanoStateBlock>builder()
                 .block(block)
                 .signature(signature)
@@ -93,7 +141,7 @@ public class NanoTransactionOperations {
                 .build();
         BlockHash blockHash = api.execute(request, BlockHash.class);
         if (!block.getHash().equals(blockHash.getHash())) {
-            throw new UncheckedIOException(new IOException("Block " + block.getHash() + " processing failed"));
+            throw new UncheckedIOException(new IOException(transaction + " processing failed"));
         }
         return transaction;
     }

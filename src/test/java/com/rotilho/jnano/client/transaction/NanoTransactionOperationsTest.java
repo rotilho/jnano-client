@@ -8,6 +8,7 @@ import com.rotilho.jnano.client.block.NanoStateBlock;
 import com.rotilho.jnano.client.transaction.NanoTransactionOperations.BlockHash;
 import com.rotilho.jnano.client.work.NanoWorkOperations;
 import com.rotilho.jnano.commons.NanoAccounts;
+import com.rotilho.jnano.commons.NanoHelper;
 import com.rotilho.jnano.commons.NanoKeys;
 
 import org.junit.Test;
@@ -17,13 +18,17 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.UncheckedIOException;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.google.common.collect.ImmutableMap.of;
 import static com.rotilho.jnano.commons.NanoHelper.toByteArray;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static junit.framework.TestCase.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -49,6 +54,60 @@ public class NanoTransactionOperationsTest {
 
     @InjectMocks
     private NanoTransactionOperations operations;
+
+    @Test
+    public void shouldOpen() {
+        // given
+        Map<String, NanoAmount> pending = of(TARGET_HASH, BALANCE);
+        given(accountOperations.getPending(ACCOUNT)).willReturn(pending);
+
+        NanoTransaction<NanoStateBlock> expectedTransaction = createOpenTransaction();
+
+        mockWork(NanoHelper.toHex(PUBLIC_KEY), expectedTransaction.getWork());
+
+        given(api.execute(any(), eq(BlockHash.class))).willReturn(new BlockHash(expectedTransaction.getHash()));
+
+        // when
+        NanoTransaction<NanoStateBlock> transaction = operations.open(PRIVATE_KEY, REPRESENTATIVE).get();
+
+        // then
+        assertEquals(expectedTransaction, transaction);
+    }
+
+    @Test
+    public void shouldReturnEmptyWhenOpeningAccountWithEmptyPendingTransactions() {
+        // given
+        given(accountOperations.getPending(ACCOUNT)).willReturn(emptyMap());
+
+        // when
+        Optional<NanoTransaction<NanoStateBlock>> transactions = operations.open(PRIVATE_KEY, REPRESENTATIVE);
+
+        // then
+        assertFalse(transactions.isPresent());
+    }
+
+
+    @Test
+    public void shouldReceive() {
+        // given
+        NanoAmount amount = NanoAmount.ofRaw("50");
+
+        Map<String, NanoAmount> pending = of(TARGET_HASH, amount);
+        given(accountOperations.getPending(ACCOUNT, NanoAmount.ofRaw(BigDecimal.ONE))).willReturn(pending);
+
+        mockAccount();
+        mockWork();
+
+        NanoTransaction<NanoStateBlock> expectedTransaction = createReceiveTransaction(amount);
+
+        given(api.execute(any(), eq(BlockHash.class))).willReturn(new BlockHash(expectedTransaction.getHash()));
+
+        // when
+        List<NanoTransaction<NanoStateBlock>> transactions = operations.receive(PRIVATE_KEY);
+
+        // then
+        assertEquals(singletonList(expectedTransaction), transactions);
+    }
 
     @Test
     public void shouldSend() {
@@ -110,41 +169,39 @@ public class NanoTransactionOperationsTest {
         );
     }
 
-    @Test
-    public void shouldReceive() {
-        // given
-        NanoAmount amount = NanoAmount.ofRaw("50");
 
-        Map<String, NanoAmount> pending = of(TARGET_HASH, amount);
-        given(accountOperations.getPending(ACCOUNT)).willReturn(pending);
+    @Test
+    public void shouldChange() {
+        // given
+        String representative = "xrb_1brainb3zz81wmhxndsbrjb94hx3fhr1fyydmg6iresyk76f3k7y7jiazoji";
 
         mockAccount();
         mockWork();
 
-        NanoTransaction<NanoStateBlock> expectedTransaction = createReceiveTransaction(amount);
+        NanoTransaction<NanoStateBlock> expectedTransaction = createChangeTransaction(representative);
 
         given(api.execute(any(), eq(BlockHash.class))).willReturn(new BlockHash(expectedTransaction.getHash()));
 
         // when
-        List<NanoTransaction<NanoStateBlock>> transactions = operations.receive(PRIVATE_KEY);
+        NanoTransaction<NanoStateBlock> transactions = operations.change(PRIVATE_KEY, representative);
 
         // then
-        assertEquals(singletonList(expectedTransaction), transactions);
-
+        assertEquals(expectedTransaction, transactions);
     }
 
-    private NanoTransaction<NanoStateBlock> createSendTransaction(NanoAmount amount) {
+
+    private NanoTransaction<NanoStateBlock> createOpenTransaction() {
         NanoStateBlock block = NanoStateBlock.builder()
                 .account(ACCOUNT)
-                .previous(FRONTIER)
+                .previous("0000000000000000000000000000000000000000000000000000000000000000")
                 .representative(REPRESENTATIVE)
-                .balance(BALANCE.subtract(amount))
-                .link(TARGET_ACCOUNT)
+                .balance(BALANCE)
+                .link(TARGET_HASH)
                 .build();
         return NanoTransaction.<NanoStateBlock>builder()
                 .block(block)
-                .signature("94D9D49BE57F9B5FE00DA00AEFE9B4497772E479089B54341D4E976CAB0EFD2178353D727ADDD9AFF07A84C4A6071593ED0C9F048A877DFE03492656B623F005")
-                .work("572a137c36b8ff90")
+                .signature("7B937B422CC41981237F0D78EF1BC9B633698809BA3ECC7F9075CCA6630431983EBB1C9A5C628F2584ACA45BDE4DA8AAED23FE29CAE2535E9BA4BB47BD79C103")
+                .work("fa514e88cca1589f")
                 .build();
     }
 
@@ -164,6 +221,37 @@ public class NanoTransactionOperationsTest {
                 .build();
     }
 
+    private NanoTransaction<NanoStateBlock> createSendTransaction(NanoAmount amount) {
+        NanoStateBlock block = NanoStateBlock.builder()
+                .account(ACCOUNT)
+                .previous(FRONTIER)
+                .representative(REPRESENTATIVE)
+                .balance(BALANCE.subtract(amount))
+                .link(TARGET_ACCOUNT)
+                .build();
+        return NanoTransaction.<NanoStateBlock>builder()
+                .block(block)
+                .signature("94D9D49BE57F9B5FE00DA00AEFE9B4497772E479089B54341D4E976CAB0EFD2178353D727ADDD9AFF07A84C4A6071593ED0C9F048A877DFE03492656B623F005")
+                .work("572a137c36b8ff90")
+                .build();
+    }
+
+
+    private NanoTransaction<NanoStateBlock> createChangeTransaction(String representative) {
+        NanoStateBlock block = NanoStateBlock.builder()
+                .account(ACCOUNT)
+                .previous(FRONTIER)
+                .representative(representative)
+                .balance(BALANCE)
+                .link("0000000000000000000000000000000000000000000000000000000000000000")
+                .build();
+        return NanoTransaction.<NanoStateBlock>builder()
+                .block(block)
+                .signature("AE7E648868996B0EB625697F342D88A5F1B98FBB7BC613AA23B5372C9E25B5FC8EE0E4D3608F7DC7B56B13120EA504238AD1D77D5FEC0D742EAD4FFD5DCCF30C")
+                .work("572a137c36b8ff90")
+                .build();
+    }
+
 
     private void mockAccount() {
         NanoAccountInfo info = NanoAccountInfo.builder()
@@ -171,11 +259,14 @@ public class NanoTransactionOperationsTest {
                 .representative(REPRESENTATIVE)
                 .balance(BALANCE)
                 .build();
-        given(accountOperations.getInfo(ACCOUNT)).willReturn(info);
+        given(accountOperations.getInfoOrFail(ACCOUNT)).willReturn(info);
     }
 
     private void mockWork() {
-        given(workOperations.perform(FRONTIER)).willReturn("572a137c36b8ff90");
+        mockWork(FRONTIER, "572a137c36b8ff90");
     }
 
+    private void mockWork(String hash, String work) {
+        given(workOperations.perform(hash)).willReturn(work);
+    }
 }

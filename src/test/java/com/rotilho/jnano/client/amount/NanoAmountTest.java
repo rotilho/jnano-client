@@ -31,9 +31,9 @@ public class NanoAmountTest {
         public static Collection<TestCase> cases() {
             return Arrays.asList(
                     new TestCase(NanoAmount::ofGiga, NanoAmount::toGiga, "1000000000000000000000000000000000"),
-                    new TestCase(NanoAmount::ofMega, NanoAmount::toMega, "1000000000000000000000000000000"),
+                    new TestCase(NanoAmount::ofNano, NanoAmount::toNano, "1000000000000000000000000000000"),
                     new TestCase(NanoAmount::ofKilo, NanoAmount::toKilo, "1000000000000000000000000000"),
-                    new TestCase(NanoAmount::ofNano, NanoAmount::toNano, "1000000000000000000000000"),
+                    new TestCase(NanoAmount::ofSmallNano, NanoAmount::toSmallNano, "1000000000000000000000000"),
                     new TestCase(NanoAmount::ofMilli, NanoAmount::toMilli, "1000000000000000000000"),
                     new TestCase(NanoAmount::ofMicro, NanoAmount::toMicro, "1000000000000000000"),
                     new TestCase(NanoAmount::ofRaw, NanoAmount::toRaw, "1")

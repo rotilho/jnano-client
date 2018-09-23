@@ -1,7 +1,5 @@
 package com.rotilho.jnano.client.block;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.rotilho.jnano.client.amount.NanoAmount;
 import com.rotilho.jnano.commons.NanoBlocks;
 
@@ -16,7 +14,6 @@ public class NanoSendBlock implements NanoBlock {
     private final String previous;
     @NonNull
     private final String destination;
-    @JsonSerialize(using = ToStringSerializer.class)
     @NonNull
     private final NanoAmount balance;
 

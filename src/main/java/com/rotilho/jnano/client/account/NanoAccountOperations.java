@@ -3,6 +3,7 @@ package com.rotilho.jnano.client.account;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.rotilho.jnano.client.NanoAPI;
+import com.rotilho.jnano.client.NanoAPIException;
 import com.rotilho.jnano.client.NanoRequest;
 import com.rotilho.jnano.client.amount.NanoAmount;
 import com.rotilho.jnano.client.block.NanoBlock;
@@ -17,6 +18,7 @@ import com.rotilho.jnano.commons.NanoAccounts;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.Nonnull;
 
@@ -35,7 +37,19 @@ public class NanoAccountOperations {
     private final NanoAPI api;
 
     @Nonnull
-    public NanoAccountInfo getInfo(@Nonnull String account) {
+    public Optional<NanoAccountInfo> getInfo(@Nonnull String account) {
+        try {
+            return Optional.of(getInfoOrFail(account));
+        } catch (NanoAPIException e) {
+            if ("Account not found".equals(e.getError())) {
+                return Optional.empty();
+            }
+            throw e;
+        }
+    }
+
+    @Nonnull
+    public NanoAccountInfo getInfoOrFail(@Nonnull String account) {
         NanoRequest action = NanoRequest.builder()
                 .action("account_info")
                 .param("account", account)
@@ -43,7 +57,6 @@ public class NanoAccountOperations {
                 .param("weight", Boolean.TRUE.toString())
                 .param("pending", Boolean.TRUE.toString())
                 .build();
-
         return api.execute(action, NanoAccountInfo.class);
     }
 

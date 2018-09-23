@@ -4,11 +4,13 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
 @Value
+@Getter(AccessLevel.PRIVATE)
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class NanoAmount {
     @NonNull
@@ -37,12 +39,12 @@ public class NanoAmount {
         return NanoAmount.of(amount, NanoUnit.GIGA);
     }
 
-    public static NanoAmount ofMega(@NonNull BigDecimal amount) {
-        return NanoAmount.of(amount, NanoUnit.MEGA);
+    public static NanoAmount ofNano(@NonNull BigDecimal amount) {
+        return NanoAmount.of(amount, NanoUnit.NANO);
     }
 
-    public static NanoAmount ofMega(@NonNull String amount) {
-        return NanoAmount.of(amount, NanoUnit.MEGA);
+    public static NanoAmount ofNano(@NonNull String amount) {
+        return NanoAmount.of(amount, NanoUnit.NANO);
     }
 
     public static NanoAmount ofKilo(@NonNull BigDecimal amount) {
@@ -53,12 +55,12 @@ public class NanoAmount {
         return NanoAmount.of(amount, NanoUnit.KILO);
     }
 
-    public static NanoAmount ofNano(@NonNull BigDecimal amount) {
-        return NanoAmount.of(amount, NanoUnit.NANO);
+    public static NanoAmount ofSmallNano(@NonNull BigDecimal amount) {
+        return NanoAmount.of(amount, NanoUnit.SMALL_NANO);
     }
 
-    public static NanoAmount ofNano(@NonNull String amount) {
-        return NanoAmount.of(amount, NanoUnit.NANO);
+    public static NanoAmount ofSmallNano(@NonNull String amount) {
+        return NanoAmount.of(amount, NanoUnit.SMALL_NANO);
     }
 
     public static NanoAmount ofMilli(@NonNull BigDecimal amount) {
@@ -102,23 +104,27 @@ public class NanoAmount {
     }
 
     public BigDecimal to(@NonNull NanoUnit unit) {
-        return raw.divide(unit.getMultiplier());
+        BigDecimal amount = raw.divide(unit.getMultiplier());
+        if (amount.stripTrailingZeros().scale() > 0) {
+            return amount.stripTrailingZeros();
+        }
+        return amount.setScale(0, BigDecimal.ROUND_DOWN);
     }
 
     public BigDecimal toGiga() {
         return to(NanoUnit.GIGA);
     }
 
-    public BigDecimal toMega() {
-        return to(NanoUnit.MEGA);
+    public BigDecimal toNano() {
+        return to(NanoUnit.NANO);
     }
 
     public BigDecimal toKilo() {
         return to(NanoUnit.KILO);
     }
 
-    public BigDecimal toNano() {
-        return to(NanoUnit.NANO);
+    public BigDecimal toSmallNano() {
+        return to(NanoUnit.SMALL_NANO);
     }
 
     public BigDecimal toMilli() {
@@ -130,11 +136,11 @@ public class NanoAmount {
     }
 
     public BigDecimal toRaw() {
-        return raw;
+        return to(NanoUnit.RAW);
     }
 
     public String toString(@NonNull NanoUnit unit) {
-        return raw.multiply(unit.getMultiplier()).toString();
+        return to(unit).toString();
     }
 
     public String toString() {
