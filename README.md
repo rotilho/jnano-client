@@ -22,6 +22,7 @@ _First, take a look in [JNano Commons](https://github.com/rotilho/jnano-commons)
 </dependency>
 ```
 
+**Sample**
 ```java
 NanoAPI nanoAPI = NanoAPI.builder().endpoint("http://my-wallet").build();
 NanoAccountOperations accountOperations = NanoAccountOperations.of(nanoAPI);
