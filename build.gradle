@@ -1,14 +1,32 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
+    }
+}
+
+plugins {
+    id "java"
+    id "jacoco"
+    id "com.bmuschko.nexus" version '2.3.1'
+    id 'io.franzbecker.gradle-lombok' version '1.14'
+}
+
 group 'com.rotilho.jnano'
 version '1.0.0-SNAPSHOT'
-
-apply plugin: 'java'
-apply plugin: 'jacoco'
-apply plugin: 'com.bmuschko.nexus'
 
 sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+}
+
+lombok { // optional: values below are the defaults
+    version = "1.18.2"
+    sha256 = ''
 }
 
 dependencies {
@@ -18,7 +36,7 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-databind:2.9.5'
     compile 'com.fasterxml.jackson.module:jackson-module-parameter-names:2.9.5'
 
-    compile 'org.projectlombok:lombok:1.18.2'
+    compileOnly 'org.projectlombok:lombok:1.18.2'
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.skyscreamer:jsonassert:1.5.0'
@@ -30,16 +48,6 @@ jacocoTestReport {
     reports {
         xml.enabled true
         html.enabled false
-    }
-}
-
-buildscript {
-    repositories {
-        jcenter()
-    }
-
-    dependencies {
-        classpath 'com.bmuschko:gradle-nexus-plugin:2.3.1'
     }
 }
 
