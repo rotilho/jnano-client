@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import com.rotilho.jnano.client.amount.NanoAmount;
+import com.rotilho.jnano.commons.NanoAmount;
 
 import java.math.BigInteger;
 import java.time.Instant;

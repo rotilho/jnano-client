@@ -1,6 +1,6 @@
 package com.rotilho.jnano.client.block;
 
-import com.rotilho.jnano.client.amount.NanoAmount;
+import com.rotilho.jnano.commons.NanoAmount;
 import com.rotilho.jnano.commons.NanoBlocks;
 
 import lombok.Builder;

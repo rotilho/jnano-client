@@ -3,8 +3,6 @@ package com.rotilho.jnano.client.work;
 import com.rotilho.jnano.client.NanoAPI;
 import com.rotilho.jnano.client.NanoRequest;
 
-import javax.annotation.Nonnull;
-
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
@@ -14,7 +12,7 @@ public class NanoRemoteWorkOperations implements NanoWorkOperations {
     @NonNull
     private final NanoAPI api;
 
-    public String perform(@Nonnull String hash) {
+    public String perform(@NonNull String hash) {
         NanoRequest request = NanoRequest.builder()
                 .action("work_generate")
                 .param("hash", hash)

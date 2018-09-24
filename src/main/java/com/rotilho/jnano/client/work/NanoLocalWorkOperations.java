@@ -1,12 +1,13 @@
 package com.rotilho.jnano.client.work;
 
-import com.rotilho.jnano.commons.NanoPOWs;
+import com.rotilho.jnano.commons.NanoWorks;
 
-import javax.annotation.Nonnull;
+import lombok.NonNull;
+
 
 public class NanoLocalWorkOperations implements NanoWorkOperations {
     @Override
-    public String perform(@Nonnull String hash) {
-        return NanoPOWs.perform(hash);
+    public String perform(@NonNull String hash) {
+        return NanoWorks.perform(hash);
     }
 }

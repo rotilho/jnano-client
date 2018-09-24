@@ -5,10 +5,10 @@ import com.rotilho.jnano.client.NanoAPI;
 import com.rotilho.jnano.client.NanoRequest;
 import com.rotilho.jnano.client.account.NanoAccountInfo;
 import com.rotilho.jnano.client.account.NanoAccountOperations;
-import com.rotilho.jnano.client.amount.NanoAmount;
 import com.rotilho.jnano.client.block.NanoStateBlock;
 import com.rotilho.jnano.client.work.NanoWorkOperations;
 import com.rotilho.jnano.commons.NanoAccounts;
+import com.rotilho.jnano.commons.NanoAmount;
 import com.rotilho.jnano.commons.NanoHelper;
 import com.rotilho.jnano.commons.NanoKeys;
 import com.rotilho.jnano.commons.NanoSignatures;
@@ -20,8 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
-import javax.annotation.Nonnull;
 
 import lombok.Builder;
 import lombok.NonNull;
@@ -41,7 +39,7 @@ public class NanoTransactionOperations {
     @NonNull
     private final NanoWorkOperations workOperations;
 
-    public Optional<NanoTransaction<NanoStateBlock>> open(@Nonnull byte[] privateKey, @NonNull String representative) {
+    public Optional<NanoTransaction<NanoStateBlock>> open(@NonNull byte[] privateKey, @NonNull String representative) {
         byte[] publicKey = NanoKeys.createPublicKey(privateKey);
         String account = NanoAccounts.createAccount(publicKey);
 
@@ -63,11 +61,11 @@ public class NanoTransactionOperations {
         return Optional.of(process(privateKey, block, work));
     }
 
-    public List<NanoTransaction<NanoStateBlock>> receive(@Nonnull byte[] privateKey) {
+    public List<NanoTransaction<NanoStateBlock>> receive(@NonNull byte[] privateKey) {
         return receive(privateKey, NanoAmount.ofRaw(BigDecimal.ONE));
     }
 
-    public List<NanoTransaction<NanoStateBlock>> receive(@Nonnull byte[] privateKey, NanoAmount threshold) {
+    public List<NanoTransaction<NanoStateBlock>> receive(@NonNull byte[] privateKey, NanoAmount threshold) {
         String account = createAccount(privateKey);
         Map<String, NanoAmount> pending = accountOperations.getPending(account, threshold);
         return pending.entrySet().stream()
@@ -75,7 +73,7 @@ public class NanoTransactionOperations {
                 .collect(toList());
     }
 
-    private NanoTransaction<NanoStateBlock> receive(@Nonnull byte[] privateKey, @Nonnull String account, @Nonnull String hash, @Nonnull NanoAmount amount) {
+    private NanoTransaction<NanoStateBlock> receive(@NonNull byte[] privateKey, @NonNull String account, @NonNull String hash, @NonNull NanoAmount amount) {
         NanoAccountInfo info = accountOperations.getInfoOrFail(account);
 
         NanoStateBlock block = NanoStateBlock.builder()
@@ -89,7 +87,7 @@ public class NanoTransactionOperations {
         return process(privateKey, block);
     }
 
-    public NanoTransaction<NanoStateBlock> send(@Nonnull byte[] privateKey, @Nonnull String previous, @Nonnull String targetAccount, @Nonnull NanoAmount amount) {
+    public NanoTransaction<NanoStateBlock> send(@NonNull byte[] privateKey, @NonNull String previous, @NonNull String targetAccount, @NonNull NanoAmount amount) {
         String sourceAccount = createAccount(privateKey);
         NanoAccountInfo info = accountOperations.getInfoOrFail(sourceAccount);
 
@@ -109,7 +107,7 @@ public class NanoTransactionOperations {
         return process(privateKey, block);
     }
 
-    public NanoTransaction<NanoStateBlock> change(@Nonnull byte[] privateKey, @NonNull String representative) {
+    public NanoTransaction<NanoStateBlock> change(@NonNull byte[] privateKey, @NonNull String representative) {
         String account = createAccount(privateKey);
         NanoAccountInfo info = accountOperations.getInfoOrFail(account);
 
@@ -123,12 +121,12 @@ public class NanoTransactionOperations {
         return process(privateKey, block);
     }
 
-    public NanoTransaction<NanoStateBlock> process(@Nonnull byte[] privateKey, @Nonnull NanoStateBlock block) {
+    public NanoTransaction<NanoStateBlock> process(@NonNull byte[] privateKey, @NonNull NanoStateBlock block) {
         String work = workOperations.perform(block.getPrevious());
         return process(privateKey, block, work);
     }
 
-    public NanoTransaction<NanoStateBlock> process(@Nonnull byte[] privateKey, @Nonnull NanoStateBlock block, @NonNull String work) {
+    public NanoTransaction<NanoStateBlock> process(@NonNull byte[] privateKey, @NonNull NanoStateBlock block, @NonNull String work) {
         String signature = NanoSignatures.sign(privateKey, block.getHash());
         NanoTransaction<NanoStateBlock> transaction = NanoTransaction.<NanoStateBlock>builder()
                 .block(block)

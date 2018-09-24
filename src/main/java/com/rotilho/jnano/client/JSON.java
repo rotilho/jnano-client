@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
-import com.rotilho.jnano.client.amount.NanoAmount;
+import com.rotilho.jnano.commons.NanoAmount;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;

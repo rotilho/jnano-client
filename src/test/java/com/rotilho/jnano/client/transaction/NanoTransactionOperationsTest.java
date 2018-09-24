@@ -3,11 +3,11 @@ package com.rotilho.jnano.client.transaction;
 import com.rotilho.jnano.client.NanoAPI;
 import com.rotilho.jnano.client.account.NanoAccountInfo;
 import com.rotilho.jnano.client.account.NanoAccountOperations;
-import com.rotilho.jnano.client.amount.NanoAmount;
 import com.rotilho.jnano.client.block.NanoStateBlock;
 import com.rotilho.jnano.client.transaction.NanoTransactionOperations.BlockHash;
 import com.rotilho.jnano.client.work.NanoWorkOperations;
 import com.rotilho.jnano.commons.NanoAccounts;
+import com.rotilho.jnano.commons.NanoAmount;
 import com.rotilho.jnano.commons.NanoHelper;
 import com.rotilho.jnano.commons.NanoKeys;
 

@@ -4,8 +4,8 @@ import com.google.common.collect.ImmutableMap;
 
 import com.rotilho.jnano.client.HttpMock;
 import com.rotilho.jnano.client.JSON;
-import com.rotilho.jnano.client.amount.NanoAmount;
 import com.rotilho.jnano.client.transaction.NanoTransaction;
+import com.rotilho.jnano.commons.NanoAmount;
 import com.rotilho.jnano.commons.NanoHelper;
 import com.rotilho.jnano.commons.NanoKeys;
 

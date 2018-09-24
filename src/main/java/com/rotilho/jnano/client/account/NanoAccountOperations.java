@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.rotilho.jnano.client.NanoAPI;
 import com.rotilho.jnano.client.NanoAPIException;
 import com.rotilho.jnano.client.NanoRequest;
-import com.rotilho.jnano.client.amount.NanoAmount;
 import com.rotilho.jnano.client.block.NanoBlock;
 import com.rotilho.jnano.client.block.NanoChangeBlock;
 import com.rotilho.jnano.client.block.NanoOpenBlock;
@@ -14,13 +13,12 @@ import com.rotilho.jnano.client.block.NanoSendBlock;
 import com.rotilho.jnano.client.block.NanoStateBlock;
 import com.rotilho.jnano.client.transaction.NanoTransaction;
 import com.rotilho.jnano.commons.NanoAccounts;
+import com.rotilho.jnano.commons.NanoAmount;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import javax.annotation.Nonnull;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -36,8 +34,8 @@ public class NanoAccountOperations {
     @NonNull
     private final NanoAPI api;
 
-    @Nonnull
-    public Optional<NanoAccountInfo> getInfo(@Nonnull String account) {
+    @NonNull
+    public Optional<NanoAccountInfo> getInfo(@NonNull String account) {
         try {
             return Optional.of(getInfoOrFail(account));
         } catch (NanoAPIException e) {
@@ -48,8 +46,8 @@ public class NanoAccountOperations {
         }
     }
 
-    @Nonnull
-    public NanoAccountInfo getInfoOrFail(@Nonnull String account) {
+    @NonNull
+    public NanoAccountInfo getInfoOrFail(@NonNull String account) {
         NanoRequest action = NanoRequest.builder()
                 .action("account_info")
                 .param("account", account)
@@ -61,17 +59,17 @@ public class NanoAccountOperations {
     }
 
     @NonNull
-    public String create(@Nonnull byte[] publicKey) {
+    public String create(@NonNull byte[] publicKey) {
         return NanoAccounts.createAccount(publicKey);
     }
 
     @NonNull
-    public List<NanoTransaction<?>> getHistory(@Nonnull String account) {
+    public List<NanoTransaction<?>> getHistory(@NonNull String account) {
         return getHistory(account, -1);
     }
 
     @NonNull
-    public List<NanoTransaction<?>> getHistory(@Nonnull String account, @Nonnull Integer count) {
+    public List<NanoTransaction<?>> getHistory(@NonNull String account, @NonNull Integer count) {
         NanoRequest action = NanoRequest.builder()
                 .action("account_history")
                 .param("account", account)
@@ -86,17 +84,17 @@ public class NanoAccountOperations {
     }
 
     @NonNull
-    public byte[] toPublicKey(@Nonnull String account) {
+    public byte[] toPublicKey(@NonNull String account) {
         return NanoAccounts.toPublicKey(account);
     }
 
     @NonNull
-    public Map<String, NanoAmount> getPending(@Nonnull String account) {
+    public Map<String, NanoAmount> getPending(@NonNull String account) {
         return getPending(account, NanoAmount.ofRaw(BigDecimal.ONE));
     }
 
     @NonNull
-    public Map<String, NanoAmount> getPending(@Nonnull String account, @Nonnull NanoAmount threshold) {
+    public Map<String, NanoAmount> getPending(@NonNull String account, @NonNull NanoAmount threshold) {
         Map<String, Map<String, NanoAmount>> pending = getPending(singletonList(account), threshold);
         pending.values().remove(null);
         String anotherPrefix = account.startsWith("nano_") ? account.replaceFirst("nano_", "xrb_") : account.replaceFirst("xrb_", "nano_");
@@ -107,12 +105,12 @@ public class NanoAccountOperations {
     }
 
     @NonNull
-    public Map<String, Map<String, NanoAmount>> getPending(@Nonnull List<String> accounts) {
+    public Map<String, Map<String, NanoAmount>> getPending(@NonNull List<String> accounts) {
         return getPending(accounts, NanoAmount.ofRaw(BigDecimal.ONE));
     }
 
     @NonNull
-    public Map<String, Map<String, NanoAmount>> getPending(@Nonnull List<String> accounts, @Nonnull NanoAmount threshold) {
+    public Map<String, Map<String, NanoAmount>> getPending(@NonNull List<String> accounts, @NonNull NanoAmount threshold) {
         NanoRequest action = NanoRequest.builder()
                 .action("accounts_pending")
                 .param("accounts", accounts)
@@ -124,7 +122,7 @@ public class NanoAccountOperations {
         return pending.getBlocks();
     }
 
-    public boolean isValid(@Nonnull String account) {
+    public boolean isValid(@NonNull String account) {
         return NanoAccounts.isValid(account);
     }
 
