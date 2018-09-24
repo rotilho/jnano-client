@@ -24,11 +24,6 @@ repositories {
     mavenCentral()
 }
 
-lombok { // optional: values below are the defaults
-    version = "1.18.2"
-    sha256 = ''
-}
-
 dependencies {
     compile 'com.google.code.findbugs:jsr305:3.0.2'
     compile 'com.rotilho.jnano:jnano-commons:1.2.0'
