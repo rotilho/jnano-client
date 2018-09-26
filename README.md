@@ -5,7 +5,9 @@
 
 
 # JNano Client
-JNano Client is the first Java RPC client which allows you to create and sign transactions in the client side. Together with [JNano Commons](https://github.com/rotilho/jnano-commons) you will have all needed operations to create a light wallet without the need to dig in Nano implementation and focus more in delivery new awesome features.
+JNano Client is the first Java RPC client which allows you to fully manage yours keys localy. Together with [JNano Commons](https://github.com/rotilho/jnano-commons) you will have all needed operations to create a light wallet without the need to dig in Nano implementation and focus more in delivery new awesome features.
+
+**JNano Client is complience with [external key management](https://developers.nano.org/guides/external-management)**.
 
 ## How to use it?
 _First, take a look in [JNano Commons](https://github.com/rotilho/jnano-commons). It will provide you basic knowledge about low level operations._
