@@ -1,5 +1,6 @@
 package com.rotilho.jnano.client.block;
 
+import com.rotilho.jnano.commons.NanoAccountType;
 import com.rotilho.jnano.commons.NanoBlocks;
 
 import lombok.Builder;
@@ -9,6 +10,8 @@ import lombok.Value;
 @Value
 @Builder
 public class NanoOpenBlock implements NanoBlock {
+    @NonNull
+    private NanoAccountType accountType;
     @NonNull
     private final String source;
     @NonNull
@@ -23,6 +26,6 @@ public class NanoOpenBlock implements NanoBlock {
 
     @Override
     public String getHash() {
-        return NanoBlocks.hashOpenBlock(source, representative, account);
+        return NanoBlocks.hashOpenBlock(accountType, source, representative, account);
     }
 }

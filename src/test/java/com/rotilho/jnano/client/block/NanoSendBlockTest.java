@@ -1,6 +1,7 @@
 package com.rotilho.jnano.client.block;
 
 import com.rotilho.jnano.commons.NanoAmount;
+import com.rotilho.jnano.commons.NanoBaseAccountType;
 
 import org.junit.Test;
 
@@ -17,6 +18,7 @@ public class NanoSendBlockTest {
 
         // when
         NanoSendBlock block = NanoSendBlock.builder()
+                .accountType(NanoBaseAccountType.NANO)
                 .previous(previous)
                 .destination(destination)
                 .balance(balance)

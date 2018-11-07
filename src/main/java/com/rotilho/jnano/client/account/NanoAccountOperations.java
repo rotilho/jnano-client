@@ -12,6 +12,7 @@ import com.rotilho.jnano.client.block.NanoReceiveBlock;
 import com.rotilho.jnano.client.block.NanoSendBlock;
 import com.rotilho.jnano.client.block.NanoStateBlock;
 import com.rotilho.jnano.client.transaction.NanoTransaction;
+import com.rotilho.jnano.commons.NanoAccountType;
 import com.rotilho.jnano.commons.NanoAccounts;
 import com.rotilho.jnano.commons.NanoAmount;
 
@@ -31,6 +32,8 @@ import static java.util.stream.Collectors.toList;
 
 @RequiredArgsConstructor(staticName = "of")
 public class NanoAccountOperations {
+    @NonNull
+    private final NanoAccountType accountType;
     @NonNull
     private final NanoAPI api;
 
@@ -79,7 +82,7 @@ public class NanoAccountOperations {
 
         AccountHistory history = api.execute(action, AccountHistory.class);
         return history.getHistory().stream()
-                .map(a -> a.toTransaction(account))
+                .map(a -> a.toTransaction(accountType, account))
                 .collect(toList());
     }
 
@@ -151,8 +154,8 @@ public class NanoAccountOperations {
         /**
          * The account field returned by the node is the sender account not the requested account
          */
-        private NanoTransaction<?> toTransaction(String account) {
-            NanoBlock block = toBlock(account);
+        private NanoTransaction<?> toTransaction(NanoAccountType accountType, String account) {
+            NanoBlock block = toBlock(accountType, account);
             return NanoTransaction.builder()
                     .block(block)
                     .signature(signature)
@@ -160,10 +163,11 @@ public class NanoAccountOperations {
                     .build();
         }
 
-        private NanoBlock toBlock(String account) {
+        private NanoBlock toBlock(NanoAccountType accountType, String account) {
             switch (type) {
                 case "open":
                     return NanoOpenBlock.builder()
+                            .accountType(accountType)
                             .source(source)
                             .representative(representative)
                             .account(account)
@@ -175,6 +179,7 @@ public class NanoAccountOperations {
                             .build();
                 case "send":
                     return NanoSendBlock.builder()
+                            .accountType(accountType)
                             .previous(previous)
                             .destination(destination)
                             .balance(balance)
@@ -186,6 +191,7 @@ public class NanoAccountOperations {
                             .build();
                 default:
                     return NanoStateBlock.builder()
+                            .accountType(accountType)
                             .account(account)
                             .previous(previous)
                             .representative(representative)
