@@ -13,14 +13,14 @@ JNano Client is the first Java RPC client which allows you to fully manage yours
 _First, take a look in [JNano Commons](https://github.com/rotilho/jnano-commons). It will provide you basic knowledge about low level operations._
 
 **Gradle**
-`compile 'com.rotilho.jnano:jnano-client:1.0.0`
+`compile 'com.rotilho.jnano:jnano-client:1.1.0`
 
 **Maven**
 ```xml
 <dependency>
     <groupId>com.rotilho.jnano</groupId>
     <artifactId>jnano-client</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 
