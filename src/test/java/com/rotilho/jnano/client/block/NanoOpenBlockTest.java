@@ -1,5 +1,7 @@
 package com.rotilho.jnano.client.block;
 
+import com.rotilho.jnano.commons.NanoBaseAccountType;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -15,6 +17,7 @@ public class NanoOpenBlockTest {
 
         // when
         NanoOpenBlock block = NanoOpenBlock.builder()
+                .accountType(NanoBaseAccountType.NANO)
                 .source(source)
                 .representative(representative)
                 .account(account)

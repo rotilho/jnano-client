@@ -1,6 +1,7 @@
 package com.rotilho.jnano.client.block;
 
 import com.rotilho.jnano.commons.NanoAmount;
+import com.rotilho.jnano.commons.NanoBaseAccountType;
 
 import org.junit.Test;
 
@@ -19,6 +20,7 @@ public class NanoStateBlockTest {
 
         // when
         NanoStateBlock block = NanoStateBlock.builder()
+                .accountType(NanoBaseAccountType.NANO)
                 .account(account)
                 .previous(previous)
                 .representative(representative)
@@ -41,6 +43,7 @@ public class NanoStateBlockTest {
 
         // when
         NanoStateBlock block = NanoStateBlock.builder()
+                .accountType(NanoBaseAccountType.NANO)
                 .account(account)
                 .previous(previous)
                 .representative(representative)
@@ -63,6 +66,7 @@ public class NanoStateBlockTest {
 
         // when
         NanoStateBlock block = NanoStateBlock.builder()
+                .accountType(NanoBaseAccountType.NANO)
                 .account(account)
                 .previous(previous)
                 .representative(representative)
@@ -85,6 +89,7 @@ public class NanoStateBlockTest {
 
         // when
         NanoStateBlock block = NanoStateBlock.builder()
+                .accountType(NanoBaseAccountType.NANO)
                 .account(account)
                 .previous(previous)
                 .representative(representative)
@@ -107,6 +112,7 @@ public class NanoStateBlockTest {
 
         // when
         NanoStateBlock block = NanoStateBlock.builder()
+                .accountType(NanoBaseAccountType.NANO)
                 .account(account)
                 .previous(previous)
                 .representative(representative)

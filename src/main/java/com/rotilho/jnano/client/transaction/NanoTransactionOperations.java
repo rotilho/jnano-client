@@ -7,6 +7,7 @@ import com.rotilho.jnano.client.account.NanoAccountInfo;
 import com.rotilho.jnano.client.account.NanoAccountOperations;
 import com.rotilho.jnano.client.block.NanoStateBlock;
 import com.rotilho.jnano.client.work.NanoWorkOperations;
+import com.rotilho.jnano.commons.NanoAccountType;
 import com.rotilho.jnano.commons.NanoAccounts;
 import com.rotilho.jnano.commons.NanoAmount;
 import com.rotilho.jnano.commons.NanoHelper;
@@ -31,7 +32,8 @@ import static java.util.stream.Collectors.toList;
 @Builder
 @RequiredArgsConstructor(staticName = "of")
 public class NanoTransactionOperations {
-
+    @NonNull
+    private final NanoAccountType accountType;
     @NonNull
     private final NanoAPI api;
     @NonNull
@@ -52,6 +54,7 @@ public class NanoTransactionOperations {
 
         Map.Entry<String, NanoAmount> firstPending = pending.iterator().next();
         NanoStateBlock block = NanoStateBlock.builder()
+                .accountType(accountType)
                 .account(account)
                 .previous("0000000000000000000000000000000000000000000000000000000000000000")
                 .representative(representative)
@@ -77,6 +80,7 @@ public class NanoTransactionOperations {
         NanoAccountInfo info = accountOperations.getInfoOrFail(account);
 
         NanoStateBlock block = NanoStateBlock.builder()
+                .accountType(accountType)
                 .account(account)
                 .previous(info.getFrontier())
                 .representative(info.getRepresentative())
@@ -98,6 +102,7 @@ public class NanoTransactionOperations {
         NanoAmount balance = info.getBalance().subtract(amount);
 
         NanoStateBlock block = NanoStateBlock.builder()
+                .accountType(accountType)
                 .account(sourceAccount)
                 .previous(previous)
                 .representative(info.getRepresentative())
@@ -112,6 +117,7 @@ public class NanoTransactionOperations {
         NanoAccountInfo info = accountOperations.getInfoOrFail(account);
 
         NanoStateBlock block = NanoStateBlock.builder()
+                .accountType(accountType)
                 .account(account)
                 .previous(info.getFrontier())
                 .representative(representative)

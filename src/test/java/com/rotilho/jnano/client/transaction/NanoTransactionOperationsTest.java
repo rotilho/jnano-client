@@ -8,12 +8,13 @@ import com.rotilho.jnano.client.transaction.NanoTransactionOperations.BlockHash;
 import com.rotilho.jnano.client.work.NanoWorkOperations;
 import com.rotilho.jnano.commons.NanoAccounts;
 import com.rotilho.jnano.commons.NanoAmount;
+import com.rotilho.jnano.commons.NanoBaseAccountType;
 import com.rotilho.jnano.commons.NanoHelper;
 import com.rotilho.jnano.commons.NanoKeys;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -52,8 +53,12 @@ public class NanoTransactionOperationsTest {
     @Mock
     private NanoWorkOperations workOperations;
 
-    @InjectMocks
     private NanoTransactionOperations operations;
+
+    @Before
+    public void setUp() {
+        operations = NanoTransactionOperations.of(NanoBaseAccountType.NANO, api, accountOperations, workOperations);
+    }
 
     @Test
     public void shouldOpen() {
@@ -192,6 +197,7 @@ public class NanoTransactionOperationsTest {
 
     private NanoTransaction<NanoStateBlock> createOpenTransaction() {
         NanoStateBlock block = NanoStateBlock.builder()
+                .accountType(NanoBaseAccountType.NANO)
                 .account(ACCOUNT)
                 .previous("0000000000000000000000000000000000000000000000000000000000000000")
                 .representative(REPRESENTATIVE)
@@ -208,6 +214,7 @@ public class NanoTransactionOperationsTest {
 
     private NanoTransaction<NanoStateBlock> createReceiveTransaction(NanoAmount amount) {
         NanoStateBlock block = NanoStateBlock.builder()
+                .accountType(NanoBaseAccountType.NANO)
                 .account(ACCOUNT)
                 .previous(FRONTIER)
                 .representative(REPRESENTATIVE)
@@ -223,6 +230,7 @@ public class NanoTransactionOperationsTest {
 
     private NanoTransaction<NanoStateBlock> createSendTransaction(NanoAmount amount) {
         NanoStateBlock block = NanoStateBlock.builder()
+                .accountType(NanoBaseAccountType.NANO)
                 .account(ACCOUNT)
                 .previous(FRONTIER)
                 .representative(REPRESENTATIVE)
@@ -239,6 +247,7 @@ public class NanoTransactionOperationsTest {
 
     private NanoTransaction<NanoStateBlock> createChangeTransaction(String representative) {
         NanoStateBlock block = NanoStateBlock.builder()
+                .accountType(NanoBaseAccountType.NANO)
                 .account(ACCOUNT)
                 .previous(FRONTIER)
                 .representative(representative)

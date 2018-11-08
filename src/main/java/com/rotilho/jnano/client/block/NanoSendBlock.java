@@ -1,5 +1,6 @@
 package com.rotilho.jnano.client.block;
 
+import com.rotilho.jnano.commons.NanoAccountType;
 import com.rotilho.jnano.commons.NanoAmount;
 import com.rotilho.jnano.commons.NanoBlocks;
 
@@ -10,6 +11,8 @@ import lombok.Value;
 @Value
 @Builder
 public class NanoSendBlock implements NanoBlock {
+    @NonNull
+    private NanoAccountType accountType;
     @NonNull
     private final String previous;
     @NonNull
@@ -24,6 +27,6 @@ public class NanoSendBlock implements NanoBlock {
 
     @Override
     public String getHash() {
-        return NanoBlocks.hashSendBlock(previous, destination, balance.toRaw().toBigInteger());
+        return NanoBlocks.hashSendBlock(accountType, previous, destination, balance);
     }
 }

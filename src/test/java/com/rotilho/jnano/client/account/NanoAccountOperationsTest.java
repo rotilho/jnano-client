@@ -6,6 +6,7 @@ import com.rotilho.jnano.client.HttpMock;
 import com.rotilho.jnano.client.JSON;
 import com.rotilho.jnano.client.transaction.NanoTransaction;
 import com.rotilho.jnano.commons.NanoAmount;
+import com.rotilho.jnano.commons.NanoBaseAccountType;
 import com.rotilho.jnano.commons.NanoHelper;
 import com.rotilho.jnano.commons.NanoKeys;
 
@@ -33,7 +34,7 @@ public class NanoAccountOperationsTest {
 
     @Before
     public void setUp() {
-        operations = NanoAccountOperations.of(httpMock.getNanoAPI());
+        operations = NanoAccountOperations.of(NanoBaseAccountType.NANO, httpMock.getNanoAPI());
     }
 
     @Test
