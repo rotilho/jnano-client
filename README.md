@@ -25,7 +25,7 @@ _First, take a look in [JNano Commons](https://github.com/rotilho/jnano-commons)
 **Sample**
 ```java
 NanoAPI nanoAPI = NanoAPI.builder().endpoint("http://my-wallet").build();
-NanoAccountOperations accountOperations = NanoAccountOperations.of(nanoAPI);
+NanoAccountOperations accountOperations = NanoAccountOperations.of(NanoBaseAccountType.NANO, nanoAPI);
 
 Optional<NanoAccountInfo> info = accountOperations.getInfo(account);
 info.ifPresent(i-> log.info(i));
@@ -34,7 +34,7 @@ info.ifPresent(i-> log.info(i));
 NanoAPI workNanoAPI = NanoAPI.builder().endpoint("http://my-wallet").readTimeoutMillis(100_000).build();
 NanoWorkOperations workOperations = NanoRemoteWorkOperations.of(workNanoAPI);
 
-NanoTransactionOperations transactionOperations = NanoTransactionOperations.of(api, accountOperations, workOperations);
+NanoTransactionOperations transactionOperations = NanoTransactionOperations.of(NanoBaseAccountType.NANO, api, accountOperations, workOperations);
 
 List<NanoTransaction<NanoStateBlock>> transactions = transactionOperations.receive(privateKey);
 transactions.forEach(t -> log.info(t));
