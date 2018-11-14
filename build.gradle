@@ -48,8 +48,8 @@ jacocoTestReport {
 
 modifyPom {
     project {
-        name 'Nano Commons'
-        description 'JNano provides a set of low level Nano operations that includes signing, seed generation, block hashing and account creation.'
+        name 'JNano Client'
+        description 'JNano Client is the first Java RPC client which allows you to fully manage yours keys localy. Together with JNano Commons you will have all needed operations to create a light wallet without the need to dig in Nano implementation and focus more in delivery new awesome features.'
         url 'https://github.com/rotilho/jnano-client'
         packaging 'jar'
         licenses {
