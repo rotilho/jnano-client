@@ -63,7 +63,7 @@ public class NanoAccountOperations {
 
     @NonNull
     public String create(@NonNull byte[] publicKey) {
-        return NanoAccounts.createAccount(publicKey);
+        return NanoAccounts.createAccount(accountType, publicKey);
     }
 
     @NonNull
@@ -88,7 +88,7 @@ public class NanoAccountOperations {
 
     @NonNull
     public byte[] toPublicKey(@NonNull String account) {
-        return NanoAccounts.toPublicKey(account);
+        return NanoAccounts.toPublicKey(accountType, account);
     }
 
     @NonNull
@@ -126,7 +126,7 @@ public class NanoAccountOperations {
     }
 
     public boolean isValid(@NonNull String account) {
-        return NanoAccounts.isValid(account);
+        return NanoAccounts.isValid(accountType, account);
     }
 
     @Value
@@ -186,6 +186,7 @@ public class NanoAccountOperations {
                             .build();
                 case "change":
                     return NanoChangeBlock.builder()
+                            .accountType(accountType)
                             .previous(previous)
                             .representative(representative)
                             .build();

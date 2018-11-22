@@ -1,5 +1,7 @@
 package com.rotilho.jnano.client.block;
 
+import com.rotilho.jnano.client.NanoTestAccountType;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -10,10 +12,11 @@ public class NanoChangeBlockTest {
     public void shouldHashChangeBlock() {
         //given
         String previous = "F958305C0FF0551421D4ABEDCCF302079D020A0A3833E33F185E2B0415D4567A";
-        String representative = "xrb_18gmu6engqhgtjnppqam181o5nfhj4sdtgyhy36dan3jr9spt84rzwmktafc";
+        String representative = "test_18gmu6engqhgtjnppqam181o5nfhj4sdtgyhy36dan3jr9spt84rzwmktafc";
 
         // when
         NanoChangeBlock block = NanoChangeBlock.builder()
+                .accountType(new NanoTestAccountType())
                 .previous(previous)
                 .representative(representative)
                 .build();

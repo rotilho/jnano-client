@@ -4,9 +4,9 @@ import com.google.common.collect.ImmutableMap;
 
 import com.rotilho.jnano.client.HttpMock;
 import com.rotilho.jnano.client.JSON;
+import com.rotilho.jnano.client.NanoTestAccountType;
 import com.rotilho.jnano.client.transaction.NanoTransaction;
 import com.rotilho.jnano.commons.NanoAmount;
-import com.rotilho.jnano.commons.NanoBaseAccountType;
 import com.rotilho.jnano.commons.NanoHelper;
 import com.rotilho.jnano.commons.NanoKeys;
 
@@ -34,7 +34,7 @@ public class NanoAccountOperationsTest {
 
     @Before
     public void setUp() {
-        operations = NanoAccountOperations.of(NanoBaseAccountType.NANO, httpMock.getNanoAPI());
+        operations = NanoAccountOperations.of(new NanoTestAccountType(), httpMock.getNanoAPI());
     }
 
     @Test
@@ -42,7 +42,7 @@ public class NanoAccountOperationsTest {
         // given
         String request = "{  \n" +
                 "  \"action\": \"account_info\",  \n" +
-                "  \"account\": \"xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3\",    \n" +
+                "  \"account\": \"test_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3\",    \n" +
                 "  \"representative\": \"true\",  \n" +
                 "  \"weight\": \"true\",  \n" +
                 "  \"pending\": \"true\"  \n" +
@@ -54,14 +54,14 @@ public class NanoAccountOperationsTest {
                 "    \"balance\": \"235580100176034320859259343606608761791\",   \n" +
                 "    \"modified_timestamp\": \"1501793775\",   \n" +
                 "    \"block_count\": \"33\",   \n" +
-                "    \"representative\": \"xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3\",   \n" +
+                "    \"representative\": \"test_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3\",   \n" +
                 "    \"weight\": \"1105577030935649664609129644855132177\",   \n" +
                 "    \"pending\": \"2309370929000000000000000000000000\"   \n" +
                 "}";
         httpMock.mock(request, response);
 
         // when
-        NanoAccountInfo information = operations.getInfoOrFail("xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3");
+        NanoAccountInfo information = operations.getInfoOrFail("test_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3");
 
         // then
         assertEquals(response, JSON.stringify(information), JSONCompareMode.LENIENT);
@@ -72,7 +72,7 @@ public class NanoAccountOperationsTest {
         // given
         String request = "{  \n" +
                 "  \"action\": \"account_info\",  \n" +
-                "  \"account\": \"xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3\",    \n" +
+                "  \"account\": \"test_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3\",    \n" +
                 "  \"representative\": \"true\",  \n" +
                 "  \"weight\": \"true\",  \n" +
                 "  \"pending\": \"true\"  \n" +
@@ -83,7 +83,7 @@ public class NanoAccountOperationsTest {
         httpMock.mock(request, response);
 
         // when
-        Optional<NanoAccountInfo> info = operations.getInfo("xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3");
+        Optional<NanoAccountInfo> info = operations.getInfo("test_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3");
 
         // then
         assertFalse(info.isPresent());
@@ -100,7 +100,7 @@ public class NanoAccountOperationsTest {
         String account = operations.create(publicKey);
 
         // then
-        String expectedAccount = "nano_3iwi45me3cgo9aza9wx5f7rder37hw11xtc1ek8psqxw5oxb8cujjad6qp9y";
+        String expectedAccount = "test_3iwi45me3cgo9aza9wx5f7rder37hw11xtc1ek8psqxw5oxb8cujjad6qp9y";
         assertEquals(expectedAccount, account);
     }
 
@@ -109,13 +109,13 @@ public class NanoAccountOperationsTest {
         String block = "{\n" +
                 "         \"type\":\"open\",\n" +
                 "         \"source\":\"19D3D919475DEED4696B5D13018151D1AF88B2BD3BCFF048B45031C1F36D1858\",\n" +
-                "         \"representative\":\"xrb_1hza3f7wiiqa7ig3jczyxj5yo86yegcmqk3criaz838j91sxcckpfhbhhra1\",\n" +
-                "         \"account\":\"xrb_1hza3f7wiiqa7ig3jczyxj5yo86yegcmqk3criaz838j91sxcckpfhbhhra1\",\n" +
+                "         \"representative\":\"test_1hza3f7wiiqa7ig3jczyxj5yo86yegcmqk3criaz838j91sxcckpfhbhhra1\",\n" +
+                "         \"account\":\"test_1hza3f7wiiqa7ig3jczyxj5yo86yegcmqk3criaz838j91sxcckpfhbhhra1\",\n" +
                 "         \"work\":\"4ec76c9bda2325ed\",\n" +
                 "         \"signature\":\"5974324F8CC42DA56F62FC212A17886BDCB18DE363D04DA84EEDC99CB4A33919D14A2CF9DE9D534FAA6D0B91D01F0622205D898293525E692586C84F2DCF9208\"\n" +
                 "}\n";
 
-        shouldReturnHistory("xrb_1hza3f7wiiqa7ig3jczyxj5yo86yegcmqk3criaz838j91sxcckpfhbhhra1", block);
+        shouldReturnHistory("test_1hza3f7wiiqa7ig3jczyxj5yo86yegcmqk3criaz838j91sxcckpfhbhhra1", block);
     }
 
     @Test
@@ -128,7 +128,7 @@ public class NanoAccountOperationsTest {
                 "    \"signature\": \"A13FD22527771667D5DFF33D69787D734836A3561D8A490C1F4917A05D77EA09860461D5FBFC99246A4EAB5627F119AD477598E22EE021C4711FACF4F3C80D0E\"\n" +
                 "}\n";
 
-        shouldReturnHistory("xrb_1hza3f7wiiqa7ig3jczyxj5yo86yegcmqk3criaz838j91sxcckpfhbhhra1", block);
+        shouldReturnHistory("test_1hza3f7wiiqa7ig3jczyxj5yo86yegcmqk3criaz838j91sxcckpfhbhhra1", block);
     }
 
     @Test
@@ -136,13 +136,13 @@ public class NanoAccountOperationsTest {
         String block = "{\n" +
                 "    \"type\": \"send\",\n" +
                 "    \"previous\": \"314BA8D9057678C1F53371C2DB3026C1FAC01EC8E7802FD9A2E8130FC523429E\",\n" +
-                "    \"destination\": \"xrb_18gmu6engqhgtjnppqam181o5nfhj4sdtgyhy36dan3jr9spt84rzwmktafc\",\n" +
+                "    \"destination\": \"test_18gmu6engqhgtjnppqam181o5nfhj4sdtgyhy36dan3jr9spt84rzwmktafc\",\n" +
                 "    \"balance\": \"1000000\",\n" +
                 "    \"work\": \"478563b2d9facfd4\",\n" +
                 "    \"signature\": \"F19CA177EFA8692C8CBF7478CE3213F56E4A85DF760DA7A9E69141849831F8FD79BA9ED89CEC807B690FB4AA42D5008F9DBA7115E63C935401F1F0EFA547BC00\"\n" +
                 "}\n";
 
-        shouldReturnHistory("xrb_18gmu6engqhgtjnppqam181o5nfhj4sdtgyhy36dan3jr9spt84rzwmktafc", block);
+        shouldReturnHistory("test_18gmu6engqhgtjnppqam181o5nfhj4sdtgyhy36dan3jr9spt84rzwmktafc", block);
     }
 
     @Test
@@ -150,34 +150,34 @@ public class NanoAccountOperationsTest {
         String block = "{\n" +
                 "    \"type\": \"change\",\n" +
                 "    \"previous\": \"F958305C0FF0551421D4ABEDCCF302079D020A0A3833E33F185E2B0415D4567A\",\n" +
-                "    \"representative\": \"xrb_18gmu6engqhgtjnppqam181o5nfhj4sdtgyhy36dan3jr9spt84rzwmktafc\",\n" +
+                "    \"representative\": \"test_18gmu6engqhgtjnppqam181o5nfhj4sdtgyhy36dan3jr9spt84rzwmktafc\",\n" +
                 "    \"work\": \"55e5b7a83edc3f4f\",\n" +
                 "    \"signature\": \"98B4D56881D9A88B170A6B2976AE21900C26A27F0E2C338D93FDED56183B73D19AA5BEB48E43FCBB8FF8293FDD368CEF50600FECEFD490A0855ED702ED209E04\"\n" +
                 "}\n";
 
-        shouldReturnHistory("xrb_18gmu6engqhgtjnppqam181o5nfhj4sdtgyhy36dan3jr9spt84rzwmktafc", block);
+        shouldReturnHistory("test_18gmu6engqhgtjnppqam181o5nfhj4sdtgyhy36dan3jr9spt84rzwmktafc", block);
     }
 
     @Test
     public void shouldReturnHistoryWithStateBlock() throws Exception {
         String block = "{\n" +
                 "    \"type\": \"state\",\n" +
-                "    \"account\": \"xrb_3igf8hd4sjshoibbbkeitmgkp1o6ug4xads43j6e4gqkj5xk5o83j8ja9php\",\n" +
+                "    \"account\": \"test_3igf8hd4sjshoibbbkeitmgkp1o6ug4xads43j6e4gqkj5xk5o83j8ja9php\",\n" +
                 "    \"previous\": \"0000000000000000000000000000000000000000000000000000000000000000\",\n" +
-                "    \"representative\": \"xrb_3p1asma84n8k84joneka776q4egm5wwru3suho9wjsfyuem8j95b3c78nw8j\",\n" +
+                "    \"representative\": \"test_3p1asma84n8k84joneka776q4egm5wwru3suho9wjsfyuem8j95b3c78nw8j\",\n" +
                 "    \"balance\": \"1\",\n" +
                 "    \"link\": \"1EF0AD02257987B48030CC8D38511D3B2511672F33AF115AD09E18A86A8355A8\",\n" +
                 "    \"signature\": \"593D865DDCC6018F197C0EACD15E5CED3DAF134EDFAF6553DB9C1D0E11DBDCBBE1B01E1A4C6D4378289567E59BA122DA5BFD49729AA6C2B0FC9E592A546B4F09\",\n" +
                 "    \"work\": \"0000000000000000\"\n" +
                 "}\n";
 
-        shouldReturnHistory("xrb_3igf8hd4sjshoibbbkeitmgkp1o6ug4xads43j6e4gqkj5xk5o83j8ja9php", block);
+        shouldReturnHistory("test_3igf8hd4sjshoibbbkeitmgkp1o6ug4xads43j6e4gqkj5xk5o83j8ja9php", block);
     }
 
     @Test
     public void shouldReturnPublicKey() {
         // given
-        String address = "nano_3iwi45me3cgo9aza9wx5f7rder37hw11xtc1ek8psqxw5oxb8cujjad6qp9y";
+        String address = "test_3iwi45me3cgo9aza9wx5f7rder37hw11xtc1ek8psqxw5oxb8cujjad6qp9y";
 
         // when
         byte[] publicKey = operations.toPublicKey(address);
@@ -191,13 +191,13 @@ public class NanoAccountOperationsTest {
         // given
         String request = "{  \n" +
                 "  \"action\": \"accounts_pending\",  \n" +
-                "  \"accounts\": [\"xrb_1111111111111111111111111111111111111111111111111117353trpda\"], \n" +
+                "  \"accounts\": [\"test_1111111111111111111111111111111111111111111111111117353trpda\"], \n" +
                 "  \"count\": \"9223372036854775807\", \n" +
                 "  \"threshold\": \"1\" \n" +
                 "}";
         String response = "{  \n" +
                 "  \"blocks\" : {\n" +
-                "    \"xrb_1111111111111111111111111111111111111111111111111117353trpda\": {    \n" +
+                "    \"test_1111111111111111111111111111111111111111111111111117353trpda\": {    \n" +
                 "        \"142A538F36833D1CC78B94E11C766F75818F8B940771335C6C1B8AB880C5BB1D\": \"6000000000000000000000000000000\"    \n" +
                 "    }    \n" +
                 "   } \n" +
@@ -205,7 +205,7 @@ public class NanoAccountOperationsTest {
         httpMock.mock(request, response);
 
         // when
-        Map<String, NanoAmount> pending = operations.getPending("xrb_1111111111111111111111111111111111111111111111111117353trpda");
+        Map<String, NanoAmount> pending = operations.getPending("test_1111111111111111111111111111111111111111111111111117353trpda");
 
         // then
         assertEquals(singletonMap("142A538F36833D1CC78B94E11C766F75818F8B940771335C6C1B8AB880C5BB1D", NanoAmount.ofRaw("6000000000000000000000000000000")), pending);
@@ -216,16 +216,16 @@ public class NanoAccountOperationsTest {
         // given
         String request = "{  \n" +
                 "  \"action\": \"accounts_pending\",  \n" +
-                "  \"accounts\": [\"xrb_1111111111111111111111111111111111111111111111111117353trpda\", \"xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3\"],  \n" +
+                "  \"accounts\": [\"test_1111111111111111111111111111111111111111111111111117353trpda\", \"test_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3\"],  \n" +
                 "  \"count\": \"9223372036854775807\", \n" +
                 "  \"threshold\": \"1\" \n" +
                 "}";
         String response = "{  \n" +
                 "  \"blocks\" : {\n" +
-                "    \"xrb_1111111111111111111111111111111111111111111111111117353trpda\": {    \n" +
+                "    \"test_1111111111111111111111111111111111111111111111111117353trpda\": {    \n" +
                 "        \"142A538F36833D1CC78B94E11C766F75818F8B940771335C6C1B8AB880C5BB1D\": \"6000000000000000000000000000000\"    \n" +
                 "    },    \n" +
-                "    \"xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3\": {    \n" +
+                "    \"test_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3\": {    \n" +
                 "        \"4C1FEEF0BEA7F50BE35489A1233FE002B212DEA554B55B1B470D78BD8F210C74\": \"106370018000000000000000000000000\"    \n" +
                 "    }  \n" +
                 "   } \n" +
@@ -234,23 +234,23 @@ public class NanoAccountOperationsTest {
 
         // when
         List<String> accounts = Arrays.asList(
-                "xrb_1111111111111111111111111111111111111111111111111117353trpda",
-                "xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3"
+                "test_1111111111111111111111111111111111111111111111111117353trpda",
+                "test_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3"
         );
         Map<String, Map<String, NanoAmount>> pending = operations.getPending(accounts);
 
         // then
 
         Map<String, Map<String, NanoAmount>> expectedPending = ImmutableMap.of(
-                "xrb_1111111111111111111111111111111111111111111111111117353trpda", singletonMap("142A538F36833D1CC78B94E11C766F75818F8B940771335C6C1B8AB880C5BB1D", NanoAmount.ofRaw("6000000000000000000000000000000")),
-                "xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3", singletonMap("4C1FEEF0BEA7F50BE35489A1233FE002B212DEA554B55B1B470D78BD8F210C74", NanoAmount.ofRaw("106370018000000000000000000000000"))
+                "test_1111111111111111111111111111111111111111111111111117353trpda", singletonMap("142A538F36833D1CC78B94E11C766F75818F8B940771335C6C1B8AB880C5BB1D", NanoAmount.ofRaw("6000000000000000000000000000000")),
+                "test_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3", singletonMap("4C1FEEF0BEA7F50BE35489A1233FE002B212DEA554B55B1B470D78BD8F210C74", NanoAmount.ofRaw("106370018000000000000000000000000"))
         );
         assertEquals(expectedPending, pending);
     }
 
     @Test
     public void shouldReturnTrueWhenValidatingValidAddress() {
-        assertTrue(operations.isValid("xrb_1111111111111111111111111111111111111111111111111117353trpda"));
+        assertTrue(operations.isValid("test_1111111111111111111111111111111111111111111111111117353trpda"));
     }
 
 

@@ -1,6 +1,7 @@
 package com.rotilho.jnano.client.transaction;
 
 import com.rotilho.jnano.client.NanoAPI;
+import com.rotilho.jnano.client.NanoTestAccountType;
 import com.rotilho.jnano.client.account.NanoAccountInfo;
 import com.rotilho.jnano.client.account.NanoAccountOperations;
 import com.rotilho.jnano.client.block.NanoStateBlock;
@@ -8,7 +9,6 @@ import com.rotilho.jnano.client.transaction.NanoTransactionOperations.BlockHash;
 import com.rotilho.jnano.client.work.NanoWorkOperations;
 import com.rotilho.jnano.commons.NanoAccounts;
 import com.rotilho.jnano.commons.NanoAmount;
-import com.rotilho.jnano.commons.NanoBaseAccountType;
 import com.rotilho.jnano.commons.NanoHelper;
 import com.rotilho.jnano.commons.NanoKeys;
 
@@ -39,11 +39,11 @@ import static org.mockito.BDDMockito.given;
 public class NanoTransactionOperationsTest {
     private final static byte[] PRIVATE_KEY = toByteArray("9F0E444C69F77A49BD0BE89DB92C38FE713E0963165CCA12FAF5712D7657120F");
     private final static byte[] PUBLIC_KEY = NanoKeys.createPublicKey(PRIVATE_KEY);
-    private final static String ACCOUNT = NanoAccounts.createAccount(PUBLIC_KEY);
-    private final static String TARGET_ACCOUNT = "xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3";
+    private final static String ACCOUNT = NanoAccounts.createAccount(new NanoTestAccountType(), PUBLIC_KEY);
+    private final static String TARGET_ACCOUNT = "test_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3";
     private final static String TARGET_HASH = "991CF190094C00F0B68E2E5F75F6BEE95A2E0BD93CEAA4A6734DB9F19B728948";
     private final static NanoAmount BALANCE = NanoAmount.ofRaw("100");
-    private final static String REPRESENTATIVE = "xrb_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3";
+    private final static String REPRESENTATIVE = "test_3t6k35gi95xu6tergt6p69ck76ogmitsa8mnijtpxm9fkcm736xtoncuohr3";
     private final static String FRONTIER = "FF84533A571D953A596EA401FD41743AC85D04F406E76FDE4408EAED50B473C5";
 
     @Mock
@@ -57,7 +57,7 @@ public class NanoTransactionOperationsTest {
 
     @Before
     public void setUp() {
-        operations = NanoTransactionOperations.of(NanoBaseAccountType.NANO, api, accountOperations, workOperations);
+        operations = NanoTransactionOperations.of(new NanoTestAccountType(), api, accountOperations, workOperations);
     }
 
     @Test
@@ -178,7 +178,7 @@ public class NanoTransactionOperationsTest {
     @Test
     public void shouldChange() {
         // given
-        String representative = "xrb_1brainb3zz81wmhxndsbrjb94hx3fhr1fyydmg6iresyk76f3k7y7jiazoji";
+        String representative = "test_1brainb3zz81wmhxndsbrjb94hx3fhr1fyydmg6iresyk76f3k7y7jiazoji";
 
         mockAccount();
         mockWork();
@@ -197,7 +197,7 @@ public class NanoTransactionOperationsTest {
 
     private NanoTransaction<NanoStateBlock> createOpenTransaction() {
         NanoStateBlock block = NanoStateBlock.builder()
-                .accountType(NanoBaseAccountType.NANO)
+                .accountType(new NanoTestAccountType())
                 .account(ACCOUNT)
                 .previous("0000000000000000000000000000000000000000000000000000000000000000")
                 .representative(REPRESENTATIVE)
@@ -214,7 +214,7 @@ public class NanoTransactionOperationsTest {
 
     private NanoTransaction<NanoStateBlock> createReceiveTransaction(NanoAmount amount) {
         NanoStateBlock block = NanoStateBlock.builder()
-                .accountType(NanoBaseAccountType.NANO)
+                .accountType(new NanoTestAccountType())
                 .account(ACCOUNT)
                 .previous(FRONTIER)
                 .representative(REPRESENTATIVE)
@@ -230,7 +230,7 @@ public class NanoTransactionOperationsTest {
 
     private NanoTransaction<NanoStateBlock> createSendTransaction(NanoAmount amount) {
         NanoStateBlock block = NanoStateBlock.builder()
-                .accountType(NanoBaseAccountType.NANO)
+                .accountType(new NanoTestAccountType())
                 .account(ACCOUNT)
                 .previous(FRONTIER)
                 .representative(REPRESENTATIVE)
@@ -247,7 +247,7 @@ public class NanoTransactionOperationsTest {
 
     private NanoTransaction<NanoStateBlock> createChangeTransaction(String representative) {
         NanoStateBlock block = NanoStateBlock.builder()
-                .accountType(NanoBaseAccountType.NANO)
+                .accountType(new NanoTestAccountType())
                 .account(ACCOUNT)
                 .previous(FRONTIER)
                 .representative(representative)

@@ -43,7 +43,7 @@ public class NanoTransactionOperations {
 
     public Optional<NanoTransaction<NanoStateBlock>> open(@NonNull byte[] privateKey, @NonNull String representative) {
         byte[] publicKey = NanoKeys.createPublicKey(privateKey);
-        String account = NanoAccounts.createAccount(publicKey);
+        String account = NanoAccounts.createAccount(accountType, publicKey);
 
         Set<Map.Entry<String, NanoAmount>> pending = accountOperations.getPending(account).entrySet();
         if (pending.isEmpty()) {
@@ -152,7 +152,7 @@ public class NanoTransactionOperations {
 
     private String createAccount(byte[] privateKey) {
         byte[] publicKey = NanoKeys.createPublicKey(privateKey);
-        return NanoAccounts.createAccount(publicKey);
+        return NanoAccounts.createAccount(accountType, publicKey);
     }
 
     @Value
